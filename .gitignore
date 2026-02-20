@@ -26,5 +26,5 @@ replay_pid*
 ### Intellij ###
 .idea
 
-### Docker ###
-back/src/main/java/fr/miage/toulouse/database/.env
+### fichier des variables d'environnement ###
+.env
