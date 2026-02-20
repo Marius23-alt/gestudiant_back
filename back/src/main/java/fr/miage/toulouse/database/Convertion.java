@@ -1,11 +1,14 @@
-package fr.miage.toulouse.back.database;
+package fr.miage.toulouse.database;
 
-import fr.miage.toulouse.maven.cours.Etudiant;
+import fr.miage.toulouse.cours.Etudiant;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Convertion {
+
+
+    private Convertion () {}
 
 
     public static Etudiant toEtudiant(ResultSet rs) throws SQLException{

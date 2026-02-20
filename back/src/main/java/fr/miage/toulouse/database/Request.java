@@ -1,6 +1,6 @@
-package fr.miage.toulouse.back.database;
+package fr.miage.toulouse.database;
 
-import fr.miage.toulouse.maven.cours.Etudiant;
+import fr.miage.toulouse.cours.Etudiant;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -36,7 +36,7 @@ public class Request {
      */
     public ObservableList<Etudiant> recupEtudiant() {
 
-        String sql = "SELECT distinct E.num_etu, E.nom, E.prenom, E.id_parcours, P.id_mention, I.semestre FROM etudiant E INNER JOIN parcours P ON E.id_parcours = P.id_parcours INNER JOIN inscription I ON I.num_etu = E.num_etu WHERE I.statut_validation = 'en_cours'";
+        String sql = "SELECT distinct E.num_etu, E.nom, E.prenom, E.id_parcours, P.id_mention, I.semestre FROM Etudiant E INNER JOIN Parcours P ON E.id_parcours = P.id_parcours INNER JOIN Inscription I ON I.num_etu = E.num_etu WHERE I.statut_validation = 'en_cours'";
 
         ObservableList<Etudiant> listeEtudiants = FXCollections.observableArrayList();
 

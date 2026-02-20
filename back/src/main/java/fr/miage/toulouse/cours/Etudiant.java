@@ -1,4 +1,4 @@
-package fr.miage.toulouse.back.cours;
+package fr.miage.toulouse.cours;
 
 /**
  * Classe qui créer des étudiants
@@ -9,8 +9,8 @@ public class Etudiant {
     private String nom;
     private String prenom;
     private String numEtudiant;
-    private String id_mention;
-    private String id_parcours;
+    private String idMention;
+    private String idParcours;
     private int semestreActuel;
 
     /**
@@ -19,12 +19,12 @@ public class Etudiant {
      * @param prenom le prénom de l'étudiant
      * @param numEtudiant le numéro étudiant de l'étudiant
      */
-    public Etudiant(String nom, String prenom, String numEtudiant, String id_mention, String id_parcours, int semestreActuel) {
+    public Etudiant(String nom, String prenom, String numEtudiant, String idMention, String idParcours, int semestreActuel) {
         this.nom = nom;
         this.prenom = prenom;
         this.numEtudiant = numEtudiant;
-        this.id_mention = id_mention;
-        this.id_parcours = id_parcours;
+        this.idMention = idMention;
+        this.idParcours = idParcours;
         this.semestreActuel = semestreActuel;
     }
 
@@ -56,13 +56,13 @@ public class Etudiant {
      * Doonne le nom de la mention de l'étudiant
      * @return Le nom de la mention
      */
-    public String getId_mention(){ return id_mention; }
+    public String getIdMention(){ return idMention; }
 
     /**
      * Donne le nom du parcours de l'étudiant
      * @return le nom du parcours de l'étudiant
      */
-    public String getId_parcours(){return this.id_parcours;}
+    public String getIdParcours(){return this.idParcours;}
 
     /**
      * Donne le numéro du semestre actuel
@@ -96,15 +96,15 @@ public class Etudiant {
 
     /**
      * Pour modifier le parcour
-     * @param id_parcours le nom du parcours mis à jours de l'étudiant
+     * @param idParcours le nom du parcours mis à jours de l'étudiant
      */
-    public void setId_parcours(String id_parcours){this.id_parcours = id_parcours;}
+    public void setIdParcours(String idParcours){this.idParcours = idParcours;}
 
     /**
      * Pour modifier la mention
-     * @param id_mention le nom de la mention mis à jours de l'étudiant
+     * @param idMention le nom de la mention mis à jours de l'étudiant
      */
-    public void setId_mention(String id_mention){this.id_mention = id_mention; }
+    public void setIdMention(String idMention){this.idMention = idMention; }
 
     /**
      * Pour modifier le semestre actuel

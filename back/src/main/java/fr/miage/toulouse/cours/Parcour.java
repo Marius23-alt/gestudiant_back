@@ -1,4 +1,4 @@
-package fr.miage.toulouse.back.cours;
+package fr.miage.toulouse.cours;
 
 import java.util.ArrayList;
 
