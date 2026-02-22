@@ -4,6 +4,7 @@ import fr.miage.toulouse.cours.Etudiant;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,9 +57,33 @@ public class Request {
         }
     }
 
+    public List<String> recupParcoursParMention(String nomMention) {
+        List<String> parcours = new ArrayList<>();
+
+        // On utilise une jointure pour lier parcours et mention, et on filtre (?)
+        String sql = "SELECT p.nom_parcours FROM Parcours p " +
+                "JOIN Mention m ON p.id_mention = m.id_mention " +
+                "WHERE m.nom_mention = ?";
+
+        // On utilise un PreparedStatement quand on a des variables (?) pour la sécurité
+        try (PreparedStatement pst = conn.prepareStatement(sql)) {
+
+            pst.setString(1, nomMention); // On remplace le '?' par le nom de la mention
+
+            try (ResultSet rs = pst.executeQuery()) {
+                while (rs.next()) {
+                    parcours.add(rs.getString("nom_parcours"));
+                }
+            }
+        } catch (SQLException e) {
+            log.log(Level.WARNING, "Erreur récupération parcours par mention", e);
+        }
+        return parcours;
+    }
+
     public List<String> recupMentions() {
         List<String> mentions = new ArrayList<>();
-        String sql = "SELECT nom_mention FROM mention"; // Plus simple !
+        String sql = "SELECT nom_mention FROM Mention";
 
         try (Statement st = conn.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
@@ -70,22 +95,6 @@ public class Request {
             log.log(Level.WARNING, ERROR, e);
         }
         return mentions;
-    }
-
-    public List<String> recupParcours() {
-        List<String> parcours = new ArrayList<>();
-        String sql = "SELECT nom_parcours FROM parcours";
-
-        try (Statement st = conn.createStatement();
-             ResultSet rs = st.executeQuery(sql)) {
-
-            while (rs.next()) {
-                parcours.add(rs.getString("nom_parcours"));
-            }
-        } catch (SQLException e) {
-            log.log(Level.WARNING, ERROR, e);
-        }
-        return parcours;
     }
 
     /**
