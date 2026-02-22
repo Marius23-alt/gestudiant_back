@@ -5,6 +5,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -54,21 +56,36 @@ public class Request {
         }
     }
 
-    /**
-     * Permet de récupérer les mention et parcours
-     * @return une liste de p
-     */
-    public ResultSet recupParcourMention() {
+    public List<String> recupMentions() {
+        List<String> mentions = new ArrayList<>();
+        String sql = "SELECT nom_mention FROM mention"; // Plus simple !
 
-        String sql = "SELECT distinct P.nom_parcours, M.nom_mention FROM mention M, parcours P WHERE P.id_mention = M.id_mention";
+        try (Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
 
-        try (Statement st = conn.createStatement()){
-            return st.executeQuery(sql);
-
-        }catch (SQLException e){
+            while (rs.next()) {
+                mentions.add(rs.getString("nom_mention"));
+            }
+        } catch (SQLException e) {
             log.log(Level.WARNING, ERROR, e);
-            return null;
         }
+        return mentions;
+    }
+
+    public List<String> recupParcours() {
+        List<String> parcours = new ArrayList<>();
+        String sql = "SELECT nom_parcours FROM parcours";
+
+        try (Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+
+            while (rs.next()) {
+                parcours.add(rs.getString("nom_parcours"));
+            }
+        } catch (SQLException e) {
+            log.log(Level.WARNING, ERROR, e);
+        }
+        return parcours;
     }
 
     /**
