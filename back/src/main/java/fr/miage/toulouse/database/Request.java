@@ -94,4 +94,29 @@ public class Request {
             log.log(Level.WARNING, ERROR, e);
         }
     }
+
+    public ResultSet semestreActuel(){
+        String sql = "SELECT num_etu, max(semestre) FROM Inscription group by num_etu";
+
+        try (Statement st = conn.createStatement()){
+            return st.executeQuery(sql);
+
+        }catch (SQLException e){
+            log.log(Level.WARNING, ERROR, e);
+            return null;
+        }
+
+    }
+
+    public ResultSet nbEcts (){
+        String sql = "SELECT SUM(nb_credits), num_etu FROM UE Inner join Inscription i ON UE.code_ue = i.code_ue where i.statut_validation = 'valide' group by num_etu;";
+
+        try (Statement st = conn.createStatement()){
+            return st.executeQuery(sql);
+
+        }catch (SQLException e){
+            log.log(Level.WARNING, ERROR, e);
+            return null;
+        }
+    }
 }

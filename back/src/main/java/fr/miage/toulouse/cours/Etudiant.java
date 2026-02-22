@@ -12,6 +12,7 @@ public class Etudiant {
     private String idMention;
     private String idParcours;
     private int semestreActuel;
+    private int nbECTS;
 
     /**
      * Créer un étudiant
