@@ -57,6 +57,23 @@ public class Request {
         }
     }
 
+    public String recupIdParcours(String nomParcours) {
+        String sql = "SELECT id_parcours FROM Parcours WHERE nom_parcours = ?";
+
+        try (PreparedStatement pst = conn.prepareStatement(sql)) {
+            pst.setString(1, nomParcours);
+
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("id_parcours");
+                }
+            }
+        } catch (SQLException e) {
+            log.log(Level.WARNING, "Erreur lors de la récupération de l'ID du parcours", e);
+        }
+        return null; // Si on ne trouve rien
+    }
+
     public List<String> recupParcoursParMention(String nomMention) {
         List<String> parcours = new ArrayList<>();
 
@@ -104,9 +121,11 @@ public class Request {
      * @param prenom son prenom
      * @param idParcours le parcours auquel il est rattaché
      */
-    public void ajouterEtudiant(String numEtudiant, String nom, String prenom, String idParcours) {
+    // 1. On change 'void' en 'boolean'
+    // On ajoute 'semestre' dans les paramètres
+    public boolean ajouterEtudiant(String numEtudiant, String nom, String prenom, String idParcours, String semestre) {
 
-        String sql = "INSERT INTO etudiant VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Etudiant (num_etu, nom, prenom, id_parcours) VALUES (?, ?, ?, ?)";
 
         try (PreparedStatement st = conn.prepareStatement(sql)) {
             st.setString(1, numEtudiant);
@@ -114,10 +133,37 @@ public class Request {
             st.setString(3, prenom);
             st.setString(4, idParcours);
 
-            st.executeUpdate();
+            int lignesModifiees = st.executeUpdate();
 
-        }catch (SQLException e){
-            log.log(Level.WARNING, ERROR, e);
+            if (lignesModifiees > 0) {
+                boolean inscriptionReussie = ajouterInscription(numEtudiant, "BDD_SQL", "2023-2024", semestre);
+
+                return inscriptionReussie; // Renvoie true si les deux ont marché
+            }
+            return false;
+
+        } catch (SQLException e) {
+            log.log(Level.WARNING, "Erreur lors de l'insertion de l'étudiant", e);
+            return false;
+        }
+    }
+
+    public boolean ajouterInscription(String numEtudiant, String codeUe, String anneeUniv, String semestre) {
+        // On force le statut à 'en_cours' par défaut
+        String sql = "INSERT INTO Inscription (num_etu, code_ue, annee_univ, semestre, statut_validation) VALUES (?, ?, ?, ?, 'en_cours')";
+
+        try (PreparedStatement st = conn.prepareStatement(sql)) {
+            st.setString(1, numEtudiant);
+            st.setString(2, codeUe);
+            st.setString(3, anneeUniv);
+            st.setString(4, semestre);
+
+            int lignesModifiees = st.executeUpdate();
+            return lignesModifiees > 0;
+
+        } catch (SQLException e) {
+            log.log(Level.WARNING, "Erreur lors de l'insertion de l'inscription", e);
+            return false;
         }
     }
 }
