@@ -147,6 +147,7 @@ public class Etudiant {
 
         }
         setNbECTS(nb);
+
     }
 
 }
