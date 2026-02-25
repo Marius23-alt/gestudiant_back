@@ -39,7 +39,7 @@ public class Request {
      */
     public ObservableList<Etudiant> recupEtudiant() {
 
-        String sql = "SELECT distinct E.num_etu, E.nom, E.prenom, E.id_parcours, P.id_mention, I.semestre FROM Etudiant E INNER JOIN Parcours P ON E.id_parcours = P.id_parcours INNER JOIN Inscription I ON I.num_etu = E.num_etu WHERE I.statut_validation = 'en_cours'";
+        String sql = "SELECT distinct E.num_etu, E.nom, E.prenom, E.date_naissance, E.id_parcours, P.id_mention, I.semestre FROM Etudiant E INNER JOIN Parcours P ON E.id_parcours = P.id_parcours INNER JOIN Inscription I ON I.num_etu = E.num_etu WHERE I.statut_validation = 'en_cours'";
 
         ObservableList<Etudiant> listeEtudiants = FXCollections.observableArrayList();
 
@@ -123,15 +123,16 @@ public class Request {
      */
     // 1. On change 'void' en 'boolean'
     // On ajoute 'semestre' dans les paramètres
-    public boolean ajouterEtudiant(String numEtudiant, String nom, String prenom, String idParcours, String semestre) {
+    public boolean ajouterEtudiant(String numEtudiant, String nom, String prenom, String dateNaissance, String idParcours, String semestre) {
 
-        String sql = "INSERT INTO Etudiant (num_etu, nom, prenom, id_parcours) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Etudiant (num_etu, nom, prenom, date_naissance, id_parcours) VALUES (?, ?, ?, ?, ?)";
 
         try (PreparedStatement st = conn.prepareStatement(sql)) {
             st.setString(1, numEtudiant);
             st.setString(2, nom);
             st.setString(3, prenom);
-            st.setString(4, idParcours);
+            st.setString(4, dateNaissance);
+            st.setString(5, idParcours);
 
             int lignesModifiees = st.executeUpdate();
 
