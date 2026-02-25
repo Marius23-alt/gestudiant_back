@@ -1,7 +1,7 @@
 package fr.miage.toulouse.cours;
 
 /**
- * Classe qui créer des étudiants
+ * Classe qui créé des étudiants
  */
 
 public class Etudiant {
