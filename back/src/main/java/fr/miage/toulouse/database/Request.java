@@ -172,7 +172,7 @@ public class Request {
         }
     }
 
-    public ResultSet nbEcts (){
+    public ResultSet nbEcts (){ //Requette juste mais revoir le corps de la méthode avant de l'utiliser
         String sql = "SELECT SUM(nb_credits), num_etu FROM UE Inner join Inscription i ON UE.code_ue = i.code_ue where i.statut_validation = 'valide' group by num_etu;";
 
         try (Statement st = conn.createStatement()){
@@ -184,7 +184,7 @@ public class Request {
         }
     }
 
-    public ResultSet UE_Autorisés (){
+    public ResultSet UE_Autorisés (){ //Requette juste mais revoir le corps de la méthode avant de l'utiliser
         String sql = "SELECT UE.code_ue FROM UE WHERE code_ue NOT IN " +
                             "(SELECT Prerequis.code_ue FROM Prerequis WHERE Prerequis.code_ue_requise NOT IN " +
                                 "(SELECT Inscription.code_ue FROM Inscription WHERE Inscription.num_etu = ?AND Inscription.statut_validation = 'valide'" +
@@ -205,7 +205,7 @@ public class Request {
         }
     }
 
-    public ResultSet UE_EnCours (){
+    public ResultSet UE_EnCours (){ //Requette juste mais revoir le corps de la méthode avant de l'utiliser
         String sql = "SELECT Inscription.code_ue FROM Inscription WHERE Inscription.statut_validation = 'en_cours' AND Inscription.num_etu = 101; -- Mettre variable";
 
         try (Statement st = conn.createStatement()){
