@@ -135,7 +135,7 @@ public class Etudiant {
     public void setNbECTS(int nb){this.nbECTS = nb;}
 
     //Uniquement appelé quand on ajoute un étudiant. Permet de donner des ECTS aux étudiants venants en cours de licence
-    public void SemestreEcts(Etudiant e){
+    public void semestreEcts(Etudiant e){
         int nb = 30;
         switch(e.getSemestreActuel()){
             case 1:

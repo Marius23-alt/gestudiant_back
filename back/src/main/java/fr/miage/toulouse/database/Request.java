@@ -184,7 +184,7 @@ public class Request {
         }
     }
 
-    public ResultSet UE_Autorisés (){ //Requette juste mais revoir le corps de la méthode avant de l'utiliser
+    public ResultSet ueAutorises (){ //Requette juste mais revoir le corps de la méthode avant de l'utiliser
         String sql = "SELECT UE.code_ue FROM UE WHERE code_ue NOT IN " +
                             "(SELECT Prerequis.code_ue FROM Prerequis WHERE Prerequis.code_ue_requise NOT IN " +
                                 "(SELECT Inscription.code_ue FROM Inscription WHERE Inscription.num_etu = ?AND Inscription.statut_validation = 'valide'" +
@@ -205,7 +205,7 @@ public class Request {
         }
     }
 
-    public ResultSet UE_EnCours (){ //Requette juste mais revoir le corps de la méthode avant de l'utiliser
+    public ResultSet ueEnCours (){ //Requette juste mais revoir le corps de la méthode avant de l'utiliser
         String sql = "SELECT Inscription.code_ue FROM Inscription WHERE Inscription.statut_validation = 'en_cours' AND Inscription.num_etu = 101; -- Mettre variable";
 
         // Mettre num étudiant à la place du ?
@@ -219,7 +219,7 @@ public class Request {
         }
     }
 
-    public ResultSet UE_Echoue (){ //Requette juste mais revoir le corps de la méthode avant de l'utiliser
+    public ResultSet ueEchoue (){ //Requette juste mais revoir le corps de la méthode avant de l'utiliser
         String sql = "SELECT Inscription.code_ue FROM Inscription WHERE Inscription.statut_validation = 'echoue' AND Inscription.num_etu = ?;";
 
         // Mettre num étudiant à la place du ?
