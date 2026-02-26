@@ -3,8 +3,7 @@ package fr.miage.toulouse.database;
 import fr.miage.toulouse.cours.Etudiant;
 import fr.miage.toulouse.cours.Parcour;
 import fr.miage.toulouse.cours.Mention;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+
 
 
 import java.sql.*;
@@ -60,22 +59,8 @@ public class Request {
         }
     }
 
-    public String recupIdParcours(String nomParcours) {
-        String sql = "SELECT id_parcours FROM Parcours WHERE nom_parcours = ?";
 
-        try (PreparedStatement pst = conn.prepareStatement(sql)) {
-            pst.setString(1, nomParcours);
 
-            try (ResultSet rs = pst.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getString("id_parcours");
-                }
-            }
-        } catch (SQLException e) {
-            log.log(Level.WARNING, "Erreur lors de la récupération de l'ID du parcours", e);
-        }
-        return null; // Si on ne trouve rien
-    }
 
     public List<Parcour> recupParcoursParMention(Mention mention) {
 
@@ -103,15 +88,17 @@ public class Request {
         return mention.getListParcours();
     }
 
-    public List<String> recupMentions() {
-        List<String> mentions = new ArrayList<>();
+
+    public List<Mention> recupMentions() {
+
+        List<Mention> mentions = new ArrayList<>();
         String sql = "SELECT nom_mention FROM Mention";
 
         try (Statement st = conn.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
 
             while (rs.next()) {
-                mentions.add(rs.getString("nom_mention"));
+                mentions.add(Convertion.toMention(rs));
             }
         } catch (SQLException e) {
             log.log(Level.WARNING, ERROR, e);
@@ -121,29 +108,28 @@ public class Request {
 
     /**
      * Permet d'ajouter un étudiant à la base de donnée en donnant ses informations
-     * @param numEtudiant son numéro étudiant
-     * @param nom son nom
-     * @param prenom son prenom
-     * @param idParcours le parcours auquel il est rattaché
+     * @param etudiant l'étudiant à ajouter en base de données
      */
+
     // 1. On change 'void' en 'boolean'
     // On ajoute 'semestre' dans les paramètres
-    public boolean ajouterEtudiant(String numEtudiant, String nom, String prenom, String dateNaissance, String idParcours, String semestre) {
+
+    public boolean ajouterEtudiant(Etudiant etudiant) {
 
         String sql = "INSERT INTO Etudiant (num_etu, nom, prenom, date_naissance, id_parcours) VALUES (?, ?, ?, ?, ?)";
 
         try (PreparedStatement st = conn.prepareStatement(sql)) {
-            st.setString(1, numEtudiant);
-            st.setString(2, nom);
-            st.setString(3, prenom);
-            st.setString(4, dateNaissance);
-            st.setString(5, idParcours);
+            st.setString(1, etudiant.getNumEtudiant());
+            st.setString(2, etudiant.getNom());
+            st.setString(3, etudiant.getPrenom());
+            st.setString(4, etudiant.getDateNaissance());
+            st.setString(5, etudiant.getIdParcours());
 
             int lignesModifiees = st.executeUpdate();
 
             if (lignesModifiees > 0) {
 
-                return ajouterInscription(numEtudiant, "BDD_SQL", "2023-2024", semestre); // Renvoie true si les deux ont marché
+                return ajouterInscription(etudiant.getNumEtudiant(), "BDD_SQL", "2023-2024", etudiant.getSemestreActuel()); // Renvoie true si les deux ont marché
             }
             return false;
 
@@ -153,7 +139,7 @@ public class Request {
         }
     }
 
-    public boolean ajouterInscription(String numEtudiant, String codeUe, String anneeUniv, String semestre) {
+    public boolean ajouterInscription(String numEtudiant, String codeUe, String anneeUniv, int semestre) {
         // On force le statut à 'en_cours' par défaut
         String sql = "INSERT INTO Inscription (num_etu, code_ue, annee_univ, semestre, statut_validation) VALUES (?, ?, ?, ?, 'en_cours')";
 
@@ -161,7 +147,7 @@ public class Request {
             st.setString(1, numEtudiant);
             st.setString(2, codeUe);
             st.setString(3, anneeUniv);
-            st.setString(4, semestre);
+            st.setInt(4, semestre);
 
             int lignesModifiees = st.executeUpdate();
             return lignesModifiees > 0;
