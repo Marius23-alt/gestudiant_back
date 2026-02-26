@@ -4,7 +4,10 @@ import fr.miage.toulouse.cours.Etudiant;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,7 +39,7 @@ public class Request {
      */
     public ObservableList<Etudiant> recupEtudiant() {
 
-        String sql = "SELECT distinct E.num_etu, E.nom, E.prenom, E.id_parcours, P.id_mention, I.semestre FROM Etudiant E INNER JOIN Parcours P ON E.id_parcours = P.id_parcours INNER JOIN Inscription I ON I.num_etu = E.num_etu WHERE I.statut_validation = 'en_cours'";
+        String sql = "SELECT distinct E.num_etu, E.nom, E.prenom, E.date_naissance, E.id_parcours, P.id_mention, I.semestre FROM Etudiant E INNER JOIN Parcours P ON E.id_parcours = P.id_parcours INNER JOIN Inscription I ON I.num_etu = E.num_etu WHERE I.statut_validation = 'en_cours'";
 
         ObservableList<Etudiant> listeEtudiants = FXCollections.observableArrayList();
 
@@ -54,21 +57,61 @@ public class Request {
         }
     }
 
-    /**
-     * Permet de récupérer les mention et parcours
-     * @return une liste de p
-     */
-    public ResultSet recupParcourMention() {
+    public String recupIdParcours(String nomParcours) {
+        String sql = "SELECT id_parcours FROM Parcours WHERE nom_parcours = ?";
 
-        String sql = "SELECT distinct P.nom_parcours, M.nom_mention FROM mention M, parcours P WHERE P.id_mention = M.id_mention";
+        try (PreparedStatement pst = conn.prepareStatement(sql)) {
+            pst.setString(1, nomParcours);
 
-        try (Statement st = conn.createStatement()){
-            return st.executeQuery(sql);
-
-        }catch (SQLException e){
-            log.log(Level.WARNING, ERROR, e);
-            return null;
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("id_parcours");
+                }
+            }
+        } catch (SQLException e) {
+            log.log(Level.WARNING, "Erreur lors de la récupération de l'ID du parcours", e);
         }
+        return null; // Si on ne trouve rien
+    }
+
+    public List<String> recupParcoursParMention(String nomMention) {
+        List<String> parcours = new ArrayList<>();
+
+        // On utilise une jointure pour lier parcours et mention, et on filtre (?)
+        String sql = "SELECT p.nom_parcours FROM Parcours p " +
+                "JOIN Mention m ON p.id_mention = m.id_mention " +
+                "WHERE m.nom_mention = ?";
+
+        // On utilise un PreparedStatement quand on a des variables (?) pour la sécurité
+        try (PreparedStatement pst = conn.prepareStatement(sql)) {
+
+            pst.setString(1, nomMention); // On remplace le '?' par le nom de la mention
+
+            try (ResultSet rs = pst.executeQuery()) {
+                while (rs.next()) {
+                    parcours.add(rs.getString("nom_parcours"));
+                }
+            }
+        } catch (SQLException e) {
+            log.log(Level.WARNING, "Erreur récupération parcours par mention", e);
+        }
+        return parcours;
+    }
+
+    public List<String> recupMentions() {
+        List<String> mentions = new ArrayList<>();
+        String sql = "SELECT nom_mention FROM Mention";
+
+        try (Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+
+            while (rs.next()) {
+                mentions.add(rs.getString("nom_mention"));
+            }
+        } catch (SQLException e) {
+            log.log(Level.WARNING, ERROR, e);
+        }
+        return mentions;
     }
 
     /**
@@ -78,20 +121,50 @@ public class Request {
      * @param prenom son prenom
      * @param idParcours le parcours auquel il est rattaché
      */
-    public void ajouterEtudiant(String numEtudiant, String nom, String prenom, String idParcours) {
+    // 1. On change 'void' en 'boolean'
+    // On ajoute 'semestre' dans les paramètres
+    public boolean ajouterEtudiant(String numEtudiant, String nom, String prenom, String dateNaissance, String idParcours, String semestre) {
 
-        String sql = "INSERT INTO etudiant VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Etudiant (num_etu, nom, prenom, date_naissance, id_parcours) VALUES (?, ?, ?, ?, ?)";
 
         try (PreparedStatement st = conn.prepareStatement(sql)) {
             st.setString(1, numEtudiant);
             st.setString(2, nom);
             st.setString(3, prenom);
-            st.setString(4, idParcours);
+            st.setString(4, dateNaissance);
+            st.setString(5, idParcours);
 
-            st.executeUpdate();
+            int lignesModifiees = st.executeUpdate();
 
-        }catch (SQLException e){
-            log.log(Level.WARNING, ERROR, e);
+            if (lignesModifiees > 0) {
+                boolean inscriptionReussie = ajouterInscription(numEtudiant, "BDD_SQL", "2023-2024", semestre);
+
+                return inscriptionReussie; // Renvoie true si les deux ont marché
+            }
+            return false;
+
+        } catch (SQLException e) {
+            log.log(Level.WARNING, "Erreur lors de l'insertion de l'étudiant", e);
+            return false;
+        }
+    }
+
+    public boolean ajouterInscription(String numEtudiant, String codeUe, String anneeUniv, String semestre) {
+        // On force le statut à 'en_cours' par défaut
+        String sql = "INSERT INTO Inscription (num_etu, code_ue, annee_univ, semestre, statut_validation) VALUES (?, ?, ?, ?, 'en_cours')";
+
+        try (PreparedStatement st = conn.prepareStatement(sql)) {
+            st.setString(1, numEtudiant);
+            st.setString(2, codeUe);
+            st.setString(3, anneeUniv);
+            st.setString(4, semestre);
+
+            int lignesModifiees = st.executeUpdate();
+            return lignesModifiees > 0;
+
+        } catch (SQLException e) {
+            log.log(Level.WARNING, "Erreur lors de l'insertion de l'inscription", e);
+            return false;
         }
     }
 
