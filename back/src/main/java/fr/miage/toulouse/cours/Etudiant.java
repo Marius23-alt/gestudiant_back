@@ -160,7 +160,7 @@ public class Etudiant {
                 nb = 0;
 
         }
-        setNbECTS(nb);
+        e.setNbECTS(nb);
 
     }
 
