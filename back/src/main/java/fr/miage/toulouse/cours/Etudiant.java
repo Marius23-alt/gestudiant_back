@@ -13,6 +13,7 @@ public class Etudiant {
     private String idParcours;
     private String dateNaissance;
     private int semestreActuel;
+    private int nbECTS;
 
     /**
      * Créer un étudiant
@@ -20,7 +21,7 @@ public class Etudiant {
      * @param prenom le prénom de l'étudiant
      * @param numEtudiant le numéro étudiant de l'étudiant
      */
-    public Etudiant(String nom, String prenom, String dateNaissance, String numEtudiant, String idMention, String idParcours, int semestreActuel) {
+    public Etudiant(String nom, String prenom, String dateNaissance, String numEtudiant, String idMention, String idParcours, int semestreActuel, int nbECTS) {
         this.nom = nom;
         this.prenom = prenom;
         this.dateNaissance = dateNaissance;
@@ -28,6 +29,7 @@ public class Etudiant {
         this.idMention = idMention;
         this.idParcours = idParcours;
         this.semestreActuel = semestreActuel;
+        this.nbECTS = nbECTS;
     }
 
     /**
@@ -125,5 +127,41 @@ public class Etudiant {
      * @param semestreActuel l'entier du semestre mis à jours de l'étudiant
      */
     public void setSemestreActuel(int semestreActuel){this.semestreActuel = semestreActuel;}
+
+    //Recupere le nombre d'ECTS actuel
+    public int getNbEcts(){return this.nbECTS;}
+
+    //Fixe le nombre d'ECTS
+    public void setNbECTS(int nb){this.nbECTS = nb;}
+
+    //Uniquement appelé quand on ajoute un étudiant. Permet de donner des ECTS aux étudiants venants en cours de licence
+    public void SemestreEcts(){
+        int nb = 30;
+        switch(this.semestreActuel){
+            case 1:
+                nb = 0;
+                break;
+            case 2:
+                //pour case 2 pas de modif nécessaire
+                break;
+            case 3:
+                nb = nb * 2;
+                break;
+            case 4:
+                nb = nb * 3;
+                break;
+            case 5:
+                nb = nb * 4;
+                break;
+            case 6:
+                nb = nb * 5;
+                break;
+            default:
+                nb = 0;
+
+        }
+        setNbECTS(nb);
+
+    }
 
 }

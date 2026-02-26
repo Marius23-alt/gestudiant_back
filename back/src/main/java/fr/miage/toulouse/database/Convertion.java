@@ -19,7 +19,8 @@ public class Convertion {
                 rs.getString("num_etu"),
                 rs.getString("id_mention"),
                 rs.getString("id_parcours"),
-                rs.getInt("semestre")
+                rs.getInt("semestre"),
+                rs.getInt("ects")
         );
     }
 }
