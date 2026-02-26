@@ -1,6 +1,8 @@
 package fr.miage.toulouse.database;
 
 import fr.miage.toulouse.cours.Etudiant;
+import fr.miage.toulouse.cours.Parcour;
+import fr.miage.toulouse.cours.Mention;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -35,14 +37,15 @@ public class Request {
 
     /**
      * Permet de récuperer la liste des étudiants
-     * @return la liste des étudiants
+     * @return une liste d'étudiants
      */
-    public ObservableList<Etudiant> recupEtudiant() {
+    public List<Etudiant> recupEtudiant() {
 
         String sql = "SELECT distinct E.num_etu, E.nom, E.prenom, E.date_naissance, E.id_parcours, P.id_mention, I.semestre FROM Etudiant E INNER JOIN Parcours P ON E.id_parcours = P.id_parcours INNER JOIN Inscription I ON I.num_etu = E.num_etu WHERE I.statut_validation = 'en_cours'";
 
-        ObservableList<Etudiant> listeEtudiants = FXCollections.observableArrayList();
+        List<Etudiant> listeEtudiants = new ArrayList<>();
 
+        // Récupération des étudiants depuis la base de données
         try (PreparedStatement st = conn.prepareStatement(sql);
             ResultSet rs = st.executeQuery()) {
 
@@ -74,8 +77,9 @@ public class Request {
         return null; // Si on ne trouve rien
     }
 
-    public List<String> recupParcoursParMention(String nomMention) {
-        List<String> parcours = new ArrayList<>();
+    public List<Parcour> recupParcoursParMention(Mention mention) {
+
+        String nomMention = mention.getNom();
 
         // On utilise une jointure pour lier parcours et mention, et on filtre (?)
         String sql = "SELECT p.nom_parcours FROM Parcours p " +
@@ -87,15 +91,16 @@ public class Request {
 
             pst.setString(1, nomMention); // On remplace le '?' par le nom de la mention
 
+            //Ajout des parcours à la liste des mentions dans la mention
             try (ResultSet rs = pst.executeQuery()) {
                 while (rs.next()) {
-                    parcours.add(rs.getString("nom_parcours"));
+                    mention.addParcour(Convertion.toParcour(rs));
                 }
             }
         } catch (SQLException e) {
             log.log(Level.WARNING, "Erreur récupération parcours par mention", e);
         }
-        return parcours;
+        return mention.getListParcours();
     }
 
     public List<String> recupMentions() {
@@ -137,9 +142,8 @@ public class Request {
             int lignesModifiees = st.executeUpdate();
 
             if (lignesModifiees > 0) {
-                boolean inscriptionReussie = ajouterInscription(numEtudiant, "BDD_SQL", "2023-2024", semestre);
 
-                return inscriptionReussie; // Renvoie true si les deux ont marché
+                return ajouterInscription(numEtudiant, "BDD_SQL", "2023-2024", semestre); // Renvoie true si les deux ont marché
             }
             return false;
 
