@@ -15,6 +15,7 @@ public class Convertion {
         return new Etudiant(
                 rs.getString("nom"),
                 rs.getString("prenom"),
+                rs.getString("date_naissance"),
                 rs.getString("num_etu"),
                 rs.getString("id_mention"),
                 rs.getString("id_parcours"),

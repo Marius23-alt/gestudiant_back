@@ -1,7 +1,7 @@
 package fr.miage.toulouse.cours;
 
 /**
- * Classe qui créer des étudiants
+ * Classe qui créé des étudiants
  */
 
 public class Etudiant {
@@ -11,6 +11,7 @@ public class Etudiant {
     private String numEtudiant;
     private String idMention;
     private String idParcours;
+    private String dateNaissance;
     private int semestreActuel;
 
     /**
@@ -19,9 +20,10 @@ public class Etudiant {
      * @param prenom le prénom de l'étudiant
      * @param numEtudiant le numéro étudiant de l'étudiant
      */
-    public Etudiant(String nom, String prenom, String numEtudiant, String idMention, String idParcours, int semestreActuel) {
+    public Etudiant(String nom, String prenom, String dateNaissance, String numEtudiant, String idMention, String idParcours, int semestreActuel) {
         this.nom = nom;
         this.prenom = prenom;
+        this.dateNaissance = dateNaissance;
         this.numEtudiant = numEtudiant;
         this.idMention = idMention;
         this.idParcours = idParcours;
@@ -43,6 +45,12 @@ public class Etudiant {
     public String getPrenom() {
         return prenom;
     }
+
+    /**
+     * donne la date de naissance de l'étudiant
+     * @return la date de naissance de l'étudiant
+     */
+    public String getDateNaissance() {return dateNaissance; }
 
     /**
      * donne le numéro étudiant de l'étudiant
@@ -85,6 +93,12 @@ public class Etudiant {
     public void setPrenom(String prenom) {
         this.prenom = prenom;
     }
+
+    /**
+     * Pour modifier la date de naissance de l'étudiant
+     * @param dateNaissance la date de naissance mis à jour de l'étudiant
+     */
+    public void setDateNaissance(String dateNaissance){this.dateNaissance = dateNaissance;}
 
     /**
      * Pour modifier le numéro étudiant
