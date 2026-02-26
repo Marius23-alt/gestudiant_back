@@ -184,5 +184,37 @@ public class Request {
         }
     }
 
+    public ResultSet UE_Autorisés (){
+        String sql = "SELECT UE.code_ue FROM UE WHERE code_ue NOT IN " +
+                            "(SELECT Prerequis.code_ue FROM Prerequis WHERE Prerequis.code_ue_requise NOT IN " +
+                                "(SELECT Inscription.code_ue FROM Inscription WHERE Inscription.num_etu = ?AND Inscription.statut_validation = 'valide'" +
+                "             )" +
+                "              ) " +
+                "       AND UE.code_ue NOT IN  " +
+                "           (SELECT Inscription.code_ue FROM Inscription WHERE (Inscription.statut_validation = 'valide' OR Inscription.statut_validation = 'en_cours') AND Inscription.num_etu = ? );";
+
+        // RAJOUTER VARIABLE À LA PLACE DES 2 ?
+        // IL FAUT METTRE LE NUM ÉTUDIANT DE L'ÉTUDIANT EN QUESTION
+
+        try (Statement st = conn.createStatement()){
+            return st.executeQuery(sql);
+
+        }catch (SQLException e){
+            log.log(Level.WARNING, ERROR, e);
+            return null;
+        }
+    }
+
+    public ResultSet UE_EnCours (){
+        String sql = "SELECT Inscription.code_ue FROM Inscription WHERE Inscription.statut_validation = 'en_cours' AND Inscription.num_etu = 101; -- Mettre variable";
+
+        try (Statement st = conn.createStatement()){
+            return st.executeQuery(sql);
+
+        }catch (SQLException e){
+            log.log(Level.WARNING, ERROR, e);
+            return null;
+        }
+    }
 
 }
