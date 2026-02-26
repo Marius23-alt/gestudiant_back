@@ -1,6 +1,7 @@
 package fr.miage.toulouse.database;
 
 import fr.miage.toulouse.cours.Etudiant;
+import fr.miage.toulouse.cours.Mention;
 import fr.miage.toulouse.cours.Parcour;
 
 import java.sql.ResultSet;
@@ -27,5 +28,9 @@ public class Convertion {
 
     public static Parcour toParcour(ResultSet rs) throws SQLException{
         return new Parcour(rs.getString("nom_parcours"));
+    }
+
+    public static Mention toMention(ResultSet rs) throws SQLException{
+        return new Mention(rs.getString("nom_mention"));
     }
 }
