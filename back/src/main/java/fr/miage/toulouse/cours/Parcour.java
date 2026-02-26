@@ -1,9 +1,15 @@
 package fr.miage.toulouse.cours;
 
-import java.util.ArrayList;
+
 
 public class Parcour {
     private String nom;
 
-    ArrayList<Mention> listMention = new ArrayList<>();
+    public Parcour(String nom) {
+        this.nom = nom;
+    }
+
+    public String getNom() {
+        return this.nom;
+    }
 }
