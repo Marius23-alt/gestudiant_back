@@ -3,7 +3,7 @@ package fr.miage.toulouse.database;
 import fr.miage.toulouse.cours.Etudiant;
 import fr.miage.toulouse.cours.Parcour;
 import fr.miage.toulouse.cours.Mention;
-
+import fr.miage.toulouse.cours.Ue;
 
 
 import java.sql.*;
@@ -170,8 +170,11 @@ public class Request {
         }
     }
 
-    public ResultSet ueAutorises (){ //Requette juste mais revoir le corps de la méthode avant de l'utiliser
-        String sql = "SELECT UE.code_ue FROM UE WHERE code_ue NOT IN " +
+    public List<Ue> ueAutorises (Etudiant etudiant){ //Requette juste mais revoir le corps de la méthode avant de l'utiliser
+
+        List<Ue> listUe = new ArrayList<>();
+
+        String sql = "SELECT UE.code_ue ,UE.nom_ue, UE.nb_credits FROM UE WHERE code_ue NOT IN " +
                             "(SELECT Prerequis.code_ue FROM Prerequis WHERE Prerequis.code_ue_requise NOT IN " +
                                 "(SELECT Inscription.code_ue FROM Inscription WHERE Inscription.num_etu = ?AND Inscription.statut_validation = 'valide'" +
                 "             )" +
@@ -182,8 +185,17 @@ public class Request {
         // RAJOUTER VARIABLE À LA PLACE DES 2 ?
         // IL FAUT METTRE LE NUM ÉTUDIANT DE L'ÉTUDIANT EN QUESTION
 
-        try (Statement st = conn.createStatement()){
-            return st.executeQuery(sql);
+        try (PreparedStatement st = conn.prepareStatement(sql)){
+            st.setString(1, etudiant.getNumEtudiant());
+            st.setString(2, etudiant.getNumEtudiant());
+
+            ResultSet rs = st.executeQuery();
+
+            while (rs.next()) {
+                listUe.add(Convertion.toUe(rs));
+            }
+
+            return listUe;
 
         }catch (SQLException e){
             log.log(Level.WARNING, ERROR, e);
