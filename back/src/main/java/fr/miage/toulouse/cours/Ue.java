@@ -4,17 +4,25 @@ public class Ue {
 
     private String code;
     private String nom;
-    private int nbcredits;
+    private int nbCredit;
+    private int semestre;
 
-    public Ue(String code, String nom, int nbcredits) {
+    public Ue(String code, String nom, int nbCredit, int semestre) {
         this.code = code;
         this.nom = nom;
-        this.nbcredits = nbcredits;
+        this.nbCredit = nbCredit;
+        this.semestre = semestre;
     }
 
-    public String getCode() {return this.code;}
+    // --- Getters ---
+    public String getCode() { return code; }
+    public String getNom() { return nom; }
+    public int getNbCredit() { return nbCredit; }
+    public int getSemestre() { return semestre; }
 
-    public String getNom() {return this.nom;}
-
-    public int getNbcredits() {return this.nbcredits;}
+    // --- Setters ---
+    public void setCode(String code) { this.code = code; }
+    public void setNom(String nom) { this.nom = nom; }
+    public void setCredit(int nbCredit) { this.nbCredit = nbCredit; }
+    public void setSemestre(int semestre) { this.semestre = semestre; }
 }
