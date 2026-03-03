@@ -1,129 +1,44 @@
 package fr.miage.toulouse.cours;
 
-/**
- * Classe qui créé des étudiants
- */
+import java.time.LocalDate;
 
 public class Etudiant {
 
+    private int numEtu;
     private String nom;
     private String prenom;
-    private String numEtudiant;
-    private String idMention;
-    private String idParcours;
-    private String dateNaissance;
+    private LocalDate dateNaissance;
+
+    private int nbEcts;
     private int semestreActuel;
 
-    /**
-     * Créer un étudiant
-     * @param nom le nom de l'étudiant
-     * @param prenom le prénom de l'étudiant
-     * @param numEtudiant le numéro étudiant de l'étudiant
-     */
-    public Etudiant(String nom, String prenom, String dateNaissance, String numEtudiant, String idMention, String idParcours, int semestreActuel) {
+    private Parcour parcour;
+
+    public Etudiant(int numEtu, String nom, String prenom, LocalDate dateNaissance, Parcour parcour, int semestreActuel, int nbEcts) {
+        this.numEtu = numEtu;
         this.nom = nom;
         this.prenom = prenom;
         this.dateNaissance = dateNaissance;
-        this.numEtudiant = numEtudiant;
-        this.idMention = idMention;
-        this.idParcours = idParcours;
+        this.parcour = parcour;
         this.semestreActuel = semestreActuel;
+        this.nbEcts = nbEcts;
     }
 
-    /**
-     * donne le nom de l'étudiant
-     * @return le nom de l'étudiant
-     */
-    public String getNom() {
-        return nom;
-    }
+    // --- Getters ---
+    public int getNumEtu() { return numEtu; }
+    public String getNom() { return nom; }
+    public String getPrenom() { return prenom; }
+    public LocalDate getDateNaissance() { return dateNaissance; }
+    public int getNbEcts() { return nbEcts; }
+    public int getSemestreActuel() { return semestreActuel; }
+    public Parcour getParcour() { return parcour; } // Permettra de faire getParcour().getMention().getNom() !
 
-    /**
-     * donne le prenom de l'étudiant
-     * @return le prenom de l'étudiant
-     */
-    public String getPrenom() {
-        return prenom;
-    }
-
-    /**
-     * donne la date de naissance de l'étudiant
-     * @return la date de naissance de l'étudiant
-     */
-    public String getDateNaissance() {return dateNaissance; }
-
-    /**
-     * donne le numéro étudiant de l'étudiant
-     * @return le numéro étudiant de l'étudiant
-     */
-    public String getNumEtudiant() {
-        return numEtudiant;
-    }
-
-    /**
-     * Doonne le nom de la mention de l'étudiant
-     * @return Le nom de la mention
-     */
-    public String getIdMention(){ return idMention; }
-
-    /**
-     * Donne le nom du parcours de l'étudiant
-     * @return le nom du parcours de l'étudiant
-     */
-    public String getIdParcours(){return this.idParcours;}
-
-    /**
-     * Donne le numéro du semestre actuel
-     * @return L'entier du semestre actuel
-     */
-    public int getSemestreActuel(){return this.semestreActuel;}
-
-    /**
-     * Pour modifier le nom de l'étudiant
-     * @param nom le nom mis à jour de l'étudiant
-     */
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
-
-    /**
-     * Pour modifier le prénom de l'étudiant
-     * @param prenom le nom mis à jour de l'étudiant
-     */
-    public void setPrenom(String prenom) {
-        this.prenom = prenom;
-    }
-
-    /**
-     * Pour modifier la date de naissance de l'étudiant
-     * @param dateNaissance la date de naissance mis à jour de l'étudiant
-     */
-    public void setDateNaissance(String dateNaissance){this.dateNaissance = dateNaissance;}
-
-    /**
-     * Pour modifier le numéro étudiant
-     * @param numEtudiant le numéro étudiant mis à jour de l'étudiant
-     */
-    public void setNumEtudiant(String numEtudiant) {
-        this.numEtudiant = numEtudiant;
-    }
-
-    /**
-     * Pour modifier le parcour
-     * @param idParcours le nom du parcours mis à jours de l'étudiant
-     */
-    public void setIdParcours(String idParcours){this.idParcours = idParcours;}
-
-    /**
-     * Pour modifier la mention
-     * @param idMention le nom de la mention mis à jours de l'étudiant
-     */
-    public void setIdMention(String idMention){this.idMention = idMention; }
-
-    /**
-     * Pour modifier le semestre actuel
-     * @param semestreActuel l'entier du semestre mis à jours de l'étudiant
-     */
-    public void setSemestreActuel(int semestreActuel){this.semestreActuel = semestreActuel;}
-
+    // --- Setters ---
+    public void setNumEtu(int numEtu) { this.numEtu = numEtu; }
+    public void setNom(String nom) { this.nom = nom; }
+    public void setPrenom(String prenom) { this.prenom = prenom; }
+    public void setDateNaissance(LocalDate dateNaissance) { this.dateNaissance = dateNaissance; }
+    public void setNbEcts(int nbEcts) { this.nbEcts = nbEcts; }
+    public void setSemestreActuel(int semestreActuel) { this.semestreActuel = semestreActuel; }
+    public void setParcour(Parcour parcour) { this.parcour = parcour; }
 }
