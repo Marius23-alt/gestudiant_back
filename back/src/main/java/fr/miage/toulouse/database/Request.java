@@ -65,6 +65,29 @@ public class Request {
         return listeEtudiants;
     }
 
+    public List<Ue> recupToutesLesUe() {
+        String sql = "SELECT DISTINCT " +
+                "UE.code_ue AS code, " +
+                "UE.nom_ue AS nom, " +
+                "UE.nb_credits AS nbCredit, " +
+                "Inscription.semestre " +
+                "FROM UE " +
+                "INNER JOIN Inscription ON UE.code_ue = Inscription.code_ue";
+
+        List<Ue> listeUe = new ArrayList<>();
+
+        try (PreparedStatement st = conn.prepareStatement(sql);
+             ResultSet rs = st.executeQuery()) {
+
+            while (rs.next()) {
+                listeUe.add(Convertion.toUe(rs));
+            }
+        } catch (SQLException e) {
+            log.log(Level.WARNING, "Erreur lors du chargement des UE", e);
+        }
+        return listeUe;
+    }
+
 //    /**
 //     * Permet de récuperer la liste des étudiants
 //     * @return une liste d'étudiants
