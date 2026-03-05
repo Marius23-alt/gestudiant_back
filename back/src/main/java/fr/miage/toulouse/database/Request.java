@@ -66,6 +66,8 @@ public class Request {
     }
 
     public List<Ue> recupToutesLesUe() {
+        // La requête qui ramène absolument TOUT ce dont Convertion.toUe() a besoin
+
         String sql = "SELECT DISTINCT " +
                 "UE.code_ue AS code, " +
                 "UE.nom_ue AS nom, " +
