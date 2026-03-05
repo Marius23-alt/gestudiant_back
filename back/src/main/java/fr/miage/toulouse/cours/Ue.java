@@ -6,8 +6,9 @@ public class Ue {
     private String nom;
     private int nbCredit;
     private int semestre;
+    private Parcour parcour;
 
-    public Ue(String code, String nom, int nbCredit, int semestre) {
+    public Ue(String code, String nom, int nbCredit, int semestre, Parcour parcours) {
         this.code = code;
         this.nom = nom;
         this.nbCredit = nbCredit;

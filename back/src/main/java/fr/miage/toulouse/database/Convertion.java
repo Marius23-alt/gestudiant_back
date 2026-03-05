@@ -52,11 +52,23 @@ public class Convertion {
     }
 
     public static Ue toUe(ResultSet rs) throws SQLException {
+        Mention mention = new Mention(
+                rs.getInt("id_mention"),
+                rs.getString("mention")
+        );
+
+        Parcour parcour = new Parcour(
+                rs.getInt("id_parcours"),
+                rs.getString("parcour"),
+                mention
+        );
+
         return new Ue(
-                rs.getString("code_ue"),
-                rs.getString("nom_ue"),
-                rs.getInt("nb_credits"),
-                1 // Ajout d'un semestre par défaut si un objet Ue en a un dans son constructeur
+                rs.getString("code"),
+                rs.getString("nom"),
+                rs.getInt("nbCredit"),
+                rs.getInt("semestre"),
+                parcour
         );
     }
 }

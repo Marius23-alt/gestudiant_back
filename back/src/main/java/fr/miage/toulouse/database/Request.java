@@ -68,13 +68,18 @@ public class Request {
     public List<Ue> recupToutesLesUe() {
         // La requête qui ramène absolument TOUT ce dont Convertion.toUe() a besoin
 
-        String sql = "SELECT DISTINCT " +
-                "UE.code_ue AS code, " +
-                "UE.nom_ue AS nom, " +
-                "UE.nb_credits AS nbCredit, " +
-                "Inscription.semestre " +
-                "FROM UE " +
-                "INNER JOIN Inscription ON UE.code_ue = Inscription.code_ue";
+        String sql = "SELECT DISTINCT" +
+                "    UE.code_ue AS code," +
+                "    UE.nom_ue AS nom," +
+                "    UE.nb_credits AS nbCredit," +
+                "    Inscription.semestre," +
+                "    Parcours.id_parcours," +
+                "    Mention.id_mention" +
+                "FROM UE" +
+                "    JOIN Inscription ON UE.code_ue = Inscription.code_ue" +
+                "    Join Structure_Parcours S ON UE.code_ue = S.code_ue" +
+                "    JOIN Parcours ON S.id_parcours = Parcours.id_parcours" +
+                "    JOIN Mention ON Parcours.id_mention = Mention.id_mention;";
 
         List<Ue> listeUe = new ArrayList<>();
 
