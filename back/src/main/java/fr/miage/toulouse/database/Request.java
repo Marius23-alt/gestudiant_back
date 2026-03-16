@@ -92,6 +92,28 @@ public class Request {
             log.log(Level.WARNING, "❌ Erreur SQL lors de l'ajout de l'étudiant : " + ex.getMessage(), ex);
             return false;
         }
+    public List<Ue> recupToutesLesUe() {
+        String sql = "SELECT UE.code_ue, UE.nom_ue, UE.nb_credits, " +
+                "Structure_Parcours.semestrePrevu, " +
+                "Parcours.id_parcours, Parcours.nom_parcours, " +
+                "Mention.id_mention, Mention.nom_mention " +
+                "FROM UE " +
+                "LEFT JOIN Structure_Parcours ON UE.code_ue = Structure_Parcours.code_ue " +
+                "LEFT JOIN Parcours ON Structure_Parcours.id_parcours = Parcours.id_parcours " +
+                "LEFT JOIN Mention ON Parcours.id_mention = Mention.id_mention";
+
+        List<Ue> listeUe = new ArrayList<>();
+
+        try (Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+
+            while (rs.next()) {
+                listeUe.add(Convertion.toUe(rs));
+            }
+        } catch (SQLException e) {
+            log.log(Level.WARNING, "Erreur lors du chargement des UE", e);
+        }
+        return listeUe;
     }
 
 //    /**

@@ -1,12 +1,10 @@
 package fr.miage.toulouse.database;
 
-import fr.miage.toulouse.cours.Etudiant;
-import fr.miage.toulouse.cours.Mention;
-import fr.miage.toulouse.cours.Parcour;
-import fr.miage.toulouse.cours.Ue;
+import fr.miage.toulouse.cours.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class Convertion {
 
@@ -36,6 +34,7 @@ public class Convertion {
                 rs.getString("nom"),
                 rs.getString("prenom"),
                 rs.getDate("date_naissance").toLocalDate(),
+                new ArrayList<Inscription>(),
                 parcour,
                 rs.getInt("semestre"),
                 rs.getInt("ects")
@@ -52,11 +51,32 @@ public class Convertion {
     }
 
     public static Ue toUe(ResultSet rs) throws SQLException {
+        Mention mention = null;
+        Parcour parcour = null;
+
+
+        if (rs.getString("nom_mention") != null) {
+            mention = new Mention(
+                    rs.getInt("id_mention"),
+                    rs.getString("nom_mention")
+            );
+        }
+
+        if (rs.getString("nom_parcours") != null) {
+            parcour = new Parcour(
+                    rs.getInt("id_parcours"),
+                    rs.getString("nom_parcours"),
+                    mention
+            );
+        }
+
         return new Ue(
                 rs.getString("code_ue"),
                 rs.getString("nom_ue"),
                 rs.getInt("nb_credits"),
-                1 // Ajout d'un semestre par défaut si un objet Ue en a un dans son constructeur
+                rs.getInt("semestrePrevu"),
+                parcour,
+                new ArrayList<>()
         );
     }
 }
