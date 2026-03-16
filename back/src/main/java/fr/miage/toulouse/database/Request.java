@@ -92,6 +92,7 @@ public class Request {
             log.log(Level.WARNING, "❌ Erreur SQL lors de l'ajout de l'étudiant : " + ex.getMessage(), ex);
             return false;
         }
+    }
     public List<Ue> recupToutesLesUe() {
         String sql = "SELECT UE.code_ue, UE.nom_ue, UE.nb_credits, " +
                 "Structure_Parcours.semestrePrevu, " +
