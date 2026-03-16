@@ -54,6 +54,7 @@ public class Convertion {
         Mention mention = null;
         Parcour parcour = null;
 
+
         if (rs.getString("nom_mention") != null) {
             mention = new Mention(
                     rs.getInt("id_mention"),
