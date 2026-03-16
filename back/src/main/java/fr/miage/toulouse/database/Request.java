@@ -65,6 +65,33 @@ public class Request {
         return listeEtudiants;
     }
 
+    /**
+     * Ajoute un nouvel étudiant dans la base de données.
+     * @param e L'objet Etudiant contenant les informations saisies.
+     * @return true si l'insertion a réussi, false sinon.
+     */
+    public boolean ajouterEtudiant(Etudiant e) {
+        // On insère uniquement les infos de la table Etudiant
+        String sql = "INSERT INTO Etudiant (num_etu, nom, prenom, date_naissance, id_parcours) VALUES (?, ?, ?, ?, ?)";
+
+        // On utilise this.conn qui est déjà ouverte par le constructeur !
+        try (PreparedStatement pstmt = this.conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, e.getNumEtu());
+            pstmt.setString(2, e.getNom());
+            pstmt.setString(3, e.getPrenom());
+            // Conversion de la date (LocalDate vers java.sql.Date)
+            pstmt.setDate(4, java.sql.Date.valueOf(e.getDateNaissance()));
+            // On récupère l'ID du parcours via l'objet Parcours imbriqué
+            pstmt.setInt(5, e.getParcour().getId());
+
+            int lignesModifiees = pstmt.executeUpdate();
+            return lignesModifiees > 0;
+
+        } catch (SQLException ex) {
+            log.log(Level.WARNING, "❌ Erreur SQL lors de l'ajout de l'étudiant : " + ex.getMessage(), ex);
+            return false;
+        }
     public List<Ue> recupToutesLesUe() {
         String sql = "SELECT UE.code_ue, UE.nom_ue, UE.nb_credits, " +
                 "Structure_Parcours.semestrePrevu, " +
