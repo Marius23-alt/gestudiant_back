@@ -29,6 +29,4 @@ public class Inscription {
     public void setStatut(String s){this.statut = s;}
     public void setSemestre(int s){this.semestre = s;}
 
-
-
 }

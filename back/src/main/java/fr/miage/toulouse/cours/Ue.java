@@ -15,6 +15,7 @@ public class Ue {
         this.nom = nom;
         this.nbCredit = nbCredit;
         this.semestre = semestre;
+        this.parcour = parcours;
         this.inscription = inscription;
     }
 

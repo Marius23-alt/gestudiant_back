@@ -66,25 +66,19 @@ public class Request {
     }
 
     public List<Ue> recupToutesLesUe() {
-        // La requête qui ramène absolument TOUT ce dont Convertion.toUe() a besoin
-
-        String sql = "SELECT DISTINCT" +
-                "    UE.code_ue AS code," +
-                "    UE.nom_ue AS nom," +
-                "    UE.nb_credits AS nbCredit," +
-                "    Inscription.semestre," +
-                "    Parcours.id_parcours," +
-                "    Mention.id_mention" +
-                "FROM UE" +
-                "    JOIN Inscription ON UE.code_ue = Inscription.code_ue" +
-                "    Join Structure_Parcours S ON UE.code_ue = S.code_ue" +
-                "    JOIN Parcours ON S.id_parcours = Parcours.id_parcours" +
-                "    JOIN Mention ON Parcours.id_mention = Mention.id_mention;";
+        String sql = "SELECT UE.code_ue, UE.nom_ue, UE.nb_credits, " +
+                "Structure_Parcours.semestrePrevu, " +
+                "Parcours.id_parcours, Parcours.nom_parcours, " +
+                "Mention.id_mention, Mention.nom_mention " +
+                "FROM UE " +
+                "LEFT JOIN Structure_Parcours ON UE.code_ue = Structure_Parcours.code_ue " +
+                "LEFT JOIN Parcours ON Structure_Parcours.id_parcours = Parcours.id_parcours " +
+                "LEFT JOIN Mention ON Parcours.id_mention = Mention.id_mention";
 
         List<Ue> listeUe = new ArrayList<>();
 
-        try (PreparedStatement st = conn.prepareStatement(sql);
-             ResultSet rs = st.executeQuery()) {
+        try (Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
 
             while (rs.next()) {
                 listeUe.add(Convertion.toUe(rs));

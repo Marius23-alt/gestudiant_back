@@ -51,24 +51,31 @@ public class Convertion {
     }
 
     public static Ue toUe(ResultSet rs) throws SQLException {
-        Mention mention = new Mention(
-                rs.getInt("id_mention"),
-                rs.getString("mention")
-        );
+        Mention mention = null;
+        Parcour parcour = null;
 
-        Parcour parcour = new Parcour(
-                rs.getInt("id_parcours"),
-                rs.getString("parcour"),
-                mention
-        );
+        if (rs.getString("nom_mention") != null) {
+            mention = new Mention(
+                    rs.getInt("id_mention"),
+                    rs.getString("nom_mention")
+            );
+        }
+
+        if (rs.getString("nom_parcours") != null) {
+            parcour = new Parcour(
+                    rs.getInt("id_parcours"),
+                    rs.getString("nom_parcours"),
+                    mention
+            );
+        }
 
         return new Ue(
-                rs.getString("code"),
-                rs.getString("nom"),
-                rs.getInt("nbCredit"),
-                rs.getInt("semestre"),
+                rs.getString("code_ue"),
+                rs.getString("nom_ue"),
+                rs.getInt("nb_credits"),
+                rs.getInt("semestrePrevu"),
                 parcour,
-                new ArrayList<Inscription>()
+                new ArrayList<>()
         );
     }
 }
