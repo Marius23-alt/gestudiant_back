@@ -34,7 +34,6 @@ public class Convertion {
                 rs.getString("nom"),
                 rs.getString("prenom"),
                 rs.getDate("date_naissance").toLocalDate(),
-                new ArrayList<Inscription>(),
                 parcour,
                 rs.getInt("semestre"),
                 rs.getInt("ects")
@@ -75,8 +74,7 @@ public class Convertion {
                 rs.getString("nom_ue"),
                 rs.getInt("nb_credits"),
                 rs.getInt("semestrePrevu"),
-                parcour,
-                new ArrayList<>()
+                parcour
         );
     }
 }

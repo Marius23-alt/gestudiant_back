@@ -1,4 +1,5 @@
 package fr.miage.toulouse.cours;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Ue {
@@ -10,13 +11,13 @@ public class Ue {
     private Parcour parcour;
     private List<Inscription> inscription;
 
-    public Ue(String code, String nom, int nbCredit, int semestre, Parcour parcours, List<Inscription> inscription) {
+    public Ue(String code, String nom, int nbCredit, int semestre, Parcour parcours) {
         this.code = code;
         this.nom = nom;
         this.nbCredit = nbCredit;
         this.semestre = semestre;
         this.parcour = parcours;
-        this.inscription = inscription;
+        this.inscription = new ArrayList<>();
     }
 
     // --- Getters ---

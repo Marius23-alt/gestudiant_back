@@ -1,6 +1,7 @@
 package fr.miage.toulouse.cours;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Etudiant {
@@ -14,12 +15,12 @@ public class Etudiant {
 
     private Parcour parcour;
 
-    public Etudiant(int numEtu, String nom, String prenom, LocalDate dateNaissance, List<Inscription> inscription, Parcour parcour, int semestreActuel, int nbEcts) {
+    public Etudiant(int numEtu, String nom, String prenom, LocalDate dateNaissance, Parcour parcour, int semestreActuel, int nbEcts) {
         this.numEtu = numEtu;
         this.nom = nom;
         this.prenom = prenom;
         this.dateNaissance = dateNaissance;
-        this.inscription = inscription;
+        this.inscription = new ArrayList<>();
         this.parcour = parcour;
         this.semestreActuel = semestreActuel;
         this.nbEcts = nbEcts;
