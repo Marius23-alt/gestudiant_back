@@ -1,8 +1,6 @@
 package fr.miage.toulouse.database;
 
 import fr.miage.toulouse.cours.Etudiant;
-import fr.miage.toulouse.cours.Parcour;
-import fr.miage.toulouse.cours.Mention;
 import fr.miage.toulouse.cours.Ue;
 
 import java.sql.*;
@@ -115,6 +113,36 @@ public class Request {
             log.log(Level.WARNING, "Erreur lors du chargement des UE", e);
         }
         return listeUe;
+    }
+
+    /**
+     * Inscription d'un étudiant à des Ue
+     * @param numEtu le numéro d'étudiant
+     * @param code le code de l'Ue
+     * @param anneeUniv l'année universitaire au moment de l'inscription à l'Ue
+     * @param semestre le semestre de l'Ue
+     * @return true si l'inscription à réussi et false si non
+     */
+    public boolean ajouterInscitption(int numEtu, String code, String anneeUniv, int semestre) {
+
+        String sql = "Insert INTO Inscription (num_etu, code_ue, annee_univ, semestre, statut_validation) VALUES (?, ?, ?, ?, ?)";
+
+        try(PreparedStatement st = this.conn.prepareStatement(sql)){
+
+            st.setInt(1,numEtu);
+            st.setString(2,code);
+            st.setString(3,anneeUniv);
+            st.setInt(4,semestre);
+            st.setString(5, "en_cours");
+
+            int lignesModifiees = st.executeUpdate();
+            return lignesModifiees == 1;
+
+        }catch (SQLException e){
+            log.log(Level.WARNING, e, () -> "❌ Erreur SQL lors de l'ajout de l'étudiant : " + e.getMessage());
+            return false;
+        }
+
     }
 
 //    /**
