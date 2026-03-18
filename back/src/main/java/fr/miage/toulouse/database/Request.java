@@ -145,6 +145,34 @@ public class Request {
 
     }
 
+    /**
+     * Permet de valider l'Ue d'un étudiant
+     * @param numEtu le numéro d'étudiant
+     * @param code le code de l'Ue
+     * @param anneeUniv l'année universitaire au moment de l'inscription à l'Ue
+     * @param semestre le semestre de l'Ue
+     * @return true si la validation à réussi et false si non
+     */
+    public boolean valideUe(int numEtu, String code, String anneeUniv, int semestre) {
+
+        String sql = "UPDATE Inscription SET statut_validation = 'valide' WHERE num_etu = ? AND code_ue = ? AND annee_univ = ? AND semestre = ?";
+
+        try (PreparedStatement st = this.conn.prepareStatement(sql)) {
+
+            st.setInt(1,numEtu);
+            st.setString(2,code);
+            st.setString(3,anneeUniv);
+            st.setInt(4,semestre);
+
+            int lignesModifiees = st.executeUpdate();
+            return lignesModifiees == 1;
+
+        }catch (SQLException e){
+            log.log(Level.WARNING, e, () -> "❌ Erreur SQL lors de l'ajout de l'étudiant : " + e.getMessage());
+            return false;
+        }
+    }
+
 //    /**
 //     * Permet de récuperer la liste des étudiants
 //     * @return une liste d'étudiants
