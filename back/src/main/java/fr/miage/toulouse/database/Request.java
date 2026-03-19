@@ -87,7 +87,7 @@ public class Request {
             return lignesModifiees > 0;
 
         } catch (SQLException ex) {
-            log.log(Level.WARNING, "❌ Erreur SQL lors de l'ajout de l'étudiant : " + ex.getMessage(), ex);
+            log.log(Level.WARNING, ex, () -> "❌ Erreur SQL lors de l'ajout de l'étudiant : " + ex.getMessage());
             return false;
         }
     }
@@ -120,26 +120,24 @@ public class Request {
      * @param numEtu le numéro d'étudiant
      * @param code le code de l'Ue
      * @param anneeUniv l'année universitaire au moment de l'inscription à l'Ue
-     * @param semestre le semestre de l'Ue
      * @return true si l'inscription à réussi et false si non
      */
-    public boolean ajouterInscitption(int numEtu, String code, String anneeUniv, int semestre) {
+    public boolean ajouterInscitption(int numEtu, String code, String anneeUniv) {
 
-        String sql = "Insert INTO Inscription (num_etu, code_ue, annee_univ, semestre, statut_validation) VALUES (?, ?, ?, ?, ?)";
+        String sql = "Insert INTO Inscription (num_etu, code_ue, annee_univ, statut_validation) VALUES (?, ?, ?, ?)";
 
         try(PreparedStatement st = this.conn.prepareStatement(sql)){
 
             st.setInt(1,numEtu);
             st.setString(2,code);
             st.setString(3,anneeUniv);
-            st.setInt(4,semestre);
-            st.setString(5, "en_cours");
+            st.setString(4, "en_cours");
 
             int lignesModifiees = st.executeUpdate();
             return lignesModifiees == 1;
 
         }catch (SQLException e){
-            log.log(Level.WARNING, e, () -> "❌ Erreur SQL lors de l'ajout de l'étudiant : " + e.getMessage());
+            log.log(Level.WARNING, e, () -> "❌ Erreur SQL lors de l'inscription de l'étudiant à l'UE : " + e.getMessage());
             return false;
         }
 
@@ -150,25 +148,23 @@ public class Request {
      * @param numEtu le numéro d'étudiant
      * @param code le code de l'Ue
      * @param anneeUniv l'année universitaire au moment de l'inscription à l'Ue
-     * @param semestre le semestre de l'Ue
      * @return true si la validation à réussi et false si non
      */
-    public boolean valideUe(int numEtu, String code, String anneeUniv, int semestre) {
+    public boolean valideUe(int numEtu, String code, String anneeUniv) {
 
-        String sql = "UPDATE Inscription SET statut_validation = 'valide' WHERE num_etu = ? AND code_ue = ? AND annee_univ = ? AND semestre = ?";
+        String sql = "UPDATE Inscription SET statut_validation = 'valide' WHERE num_etu = ? AND code_ue = ? AND annee_univ = ?";
 
         try (PreparedStatement st = this.conn.prepareStatement(sql)) {
 
             st.setInt(1,numEtu);
             st.setString(2,code);
             st.setString(3,anneeUniv);
-            st.setInt(4,semestre);
 
             int lignesModifiees = st.executeUpdate();
             return lignesModifiees == 1;
 
         }catch (SQLException e){
-            log.log(Level.WARNING, e, () -> "❌ Erreur SQL lors de l'ajout de l'étudiant : " + e.getMessage());
+            log.log(Level.WARNING, e, () -> "❌ Erreur SQL lors de la validation de l'UE : " + e.getMessage());
             return false;
         }
     }
