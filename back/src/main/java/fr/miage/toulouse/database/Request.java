@@ -1,8 +1,6 @@
 package fr.miage.toulouse.database;
 
 import fr.miage.toulouse.cours.Etudiant;
-import fr.miage.toulouse.cours.Parcour;
-import fr.miage.toulouse.cours.Mention;
 import fr.miage.toulouse.cours.Ue;
 
 import java.sql.*;
@@ -63,6 +61,112 @@ public class Request {
             log.log(Level.WARNING, "Erreur lors du chargement des étudiants", e);
         }
         return listeEtudiants;
+    }
+
+    /**
+     * Ajoute un nouvel étudiant dans la base de données.
+     * @param e L'objet Etudiant contenant les informations saisies.
+     * @return true si l'insertion a réussi, false sinon.
+     */
+    public boolean ajouterEtudiant(Etudiant e) {
+        // On insère uniquement les infos de la table Etudiant
+        String sql = "INSERT INTO Etudiant (num_etu, nom, prenom, date_naissance, id_parcours) VALUES (?, ?, ?, ?, ?)";
+
+        // On utilise this.conn qui est déjà ouverte par le constructeur !
+        try (PreparedStatement pstmt = this.conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, e.getNumEtu());
+            pstmt.setString(2, e.getNom());
+            pstmt.setString(3, e.getPrenom());
+            // Conversion de la date (LocalDate vers java.sql.Date)
+            pstmt.setDate(4, java.sql.Date.valueOf(e.getDateNaissance()));
+            // On récupère l'ID du parcours via l'objet Parcours imbriqué
+            pstmt.setInt(5, e.getParcour().getId());
+
+            int lignesModifiees = pstmt.executeUpdate();
+            return lignesModifiees > 0;
+
+        } catch (SQLException ex) {
+            log.log(Level.WARNING, ex, () -> "❌ Erreur SQL lors de l'ajout de l'étudiant : " + ex.getMessage());
+            return false;
+        }
+    }
+    public List<Ue> recupToutesLesUe() {
+        String sql = "SELECT UE.code_ue, UE.nom_ue, UE.nb_credits, " +
+                "Structure_Parcours.semestrePrevu, " +
+                "Parcours.id_parcours, Parcours.nom_parcours, " +
+                "Mention.id_mention, Mention.nom_mention " +
+                "FROM UE " +
+                "LEFT JOIN Structure_Parcours ON UE.code_ue = Structure_Parcours.code_ue " +
+                "LEFT JOIN Parcours ON Structure_Parcours.id_parcours = Parcours.id_parcours " +
+                "LEFT JOIN Mention ON Parcours.id_mention = Mention.id_mention";
+
+        List<Ue> listeUe = new ArrayList<>();
+
+        try (Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+
+            while (rs.next()) {
+                listeUe.add(Convertion.toUe(rs));
+            }
+        } catch (SQLException e) {
+            log.log(Level.WARNING, "Erreur lors du chargement des UE", e);
+        }
+        return listeUe;
+    }
+
+    /**
+     * Inscription d'un étudiant à des Ue
+     * @param numEtu le numéro d'étudiant
+     * @param code le code de l'Ue
+     * @param anneeUniv l'année universitaire au moment de l'inscription à l'Ue
+     * @return true si l'inscription à réussi et false si non
+     */
+    public boolean ajouterInscitption(int numEtu, String code, String anneeUniv) {
+
+        String sql = "Insert INTO Inscription (num_etu, code_ue, annee_univ, statut_validation) VALUES (?, ?, ?, ?)";
+
+        try(PreparedStatement st = this.conn.prepareStatement(sql)){
+
+            st.setInt(1,numEtu);
+            st.setString(2,code);
+            st.setString(3,anneeUniv);
+            st.setString(4, "en_cours");
+
+            int lignesModifiees = st.executeUpdate();
+            return lignesModifiees == 1;
+
+        }catch (SQLException e){
+            log.log(Level.WARNING, e, () -> "❌ Erreur SQL lors de l'inscription de l'étudiant à l'UE : " + e.getMessage());
+            return false;
+        }
+
+    }
+
+    /**
+     * Permet de valider l'Ue d'un étudiant
+     * @param numEtu le numéro d'étudiant
+     * @param code le code de l'Ue
+     * @param anneeUniv l'année universitaire au moment de l'inscription à l'Ue
+     * @return true si la validation à réussi et false si non
+     */
+    public boolean valideUe(int numEtu, String code, String anneeUniv) {
+
+        String sql = "UPDATE Inscription SET statut_validation = 'valide' WHERE num_etu = ? AND code_ue = ? AND annee_univ = ?";
+
+        try (PreparedStatement st = this.conn.prepareStatement(sql)) {
+
+            st.setInt(1,numEtu);
+            st.setString(2,code);
+            st.setString(3,anneeUniv);
+
+            int lignesModifiees = st.executeUpdate();
+            return lignesModifiees == 1;
+
+        }catch (SQLException e){
+            log.log(Level.WARNING, e, () -> "❌ Erreur SQL lors de la validation de l'UE : " + e.getMessage());
+            return false;
+        }
     }
 
 //    /**
