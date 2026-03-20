@@ -42,7 +42,7 @@ public class Request {
                 "E.num_etu, E.nom, E.prenom, E.date_naissance, " +
                 "E.id_parcours, P.nom_parcours AS parcour, " +
                 "P.id_mention, M.nom_mention AS mention, " +
-                "COALESCE((SELECT MAX(sp.semestrePrevu) FROM Inscription I JOIN Structure_Parcours sp ON I.code_ue = sp.code_ue AND sp.id_parcours = E.id_parcours WHERE I.num_etu = E.num_etu), 1) AS semestre, " +
+                "E.semestre, " +
                 "COALESCE((SELECT SUM(nb_credits) FROM UE INNER JOIN Inscription I ON UE.code_ue = I.code_ue WHERE I.num_etu = E.num_etu AND I.statut_validation = 'valide'), 0) AS ects " +
                 "FROM Etudiant E " +
                 "JOIN Parcours P ON E.id_parcours = P.id_parcours " +
@@ -71,7 +71,7 @@ public class Request {
      */
     public boolean ajouterEtudiant(Etudiant e) {
         // On insère uniquement les infos de la table Etudiant
-        String sql = "INSERT INTO Etudiant (num_etu, nom, prenom, date_naissance, id_parcours) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Etudiant (num_etu, nom, prenom, date_naissance, semestre, id_parcours) VALUES (?, ?, ?, ?, ?, ?)";
 
         // On utilise this.conn qui est déjà ouverte par le constructeur !
         try (PreparedStatement pstmt = this.conn.prepareStatement(sql)) {
@@ -81,8 +81,9 @@ public class Request {
             pstmt.setString(3, e.getPrenom());
             // Conversion de la date (LocalDate vers java.sql.Date)
             pstmt.setDate(4, java.sql.Date.valueOf(e.getDateNaissance()));
+            pstmt.setInt(5 ,e.getSemestreActuel());
             // On récupère l'ID du parcours via l'objet Parcours imbriqué
-            pstmt.setInt(5, e.getParcour().getId());
+            pstmt.setInt(6, e.getParcour().getId());
 
             int lignesModifiees = pstmt.executeUpdate();
             return lignesModifiees > 0;
