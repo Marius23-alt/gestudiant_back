@@ -48,6 +48,7 @@ public class Request {
                 "JOIN Parcours P ON E.id_parcours = P.id_parcours " +
                 "JOIN Mention M ON P.id_mention = M.id_mention";
 
+
         List<Etudiant> listeEtudiants = new ArrayList<>();
 
         try (PreparedStatement st = conn.prepareStatement(sql);
