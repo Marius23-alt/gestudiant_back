@@ -93,15 +93,18 @@ public class Request {
             return false;
         }
     }
+
     public List<Ue> recupToutesLesUe() {
         String sql = "SELECT UE.code_ue, UE.nom_ue, UE.nb_credits, " +
                 "Structure_Parcours.semestrePrevu, " +
                 "Parcours.id_parcours, Parcours.nom_parcours, " +
-                "Mention.id_mention, Mention.nom_mention " +
+                "Mention.id_mention, Mention.nom_mention, " +
+                "Prerequis.code_ue_requise " +
                 "FROM UE " +
                 "LEFT JOIN Structure_Parcours ON UE.code_ue = Structure_Parcours.code_ue " +
                 "LEFT JOIN Parcours ON Structure_Parcours.id_parcours = Parcours.id_parcours " +
-                "LEFT JOIN Mention ON Parcours.id_mention = Mention.id_mention";
+                "LEFT JOIN Mention ON Parcours.id_mention = Mention.id_mention " +
+                "LEFT JOIN Prerequis ON UE.code_ue = Prerequis.code_ue";
 
         List<Ue> listeUe = new ArrayList<>();
 
@@ -109,7 +112,13 @@ public class Request {
              ResultSet rs = st.executeQuery(sql)) {
 
             while (rs.next()) {
-                listeUe.add(Convertion.toUe(rs));
+                // Ta classe de conversion crée l'UE normalement
+                Ue nouvelleUe = Convertion.toUe(rs);
+
+                String codePrecedent = rs.getString("code_ue_requise");
+                nouvelleUe.setCodeUePrecedente(codePrecedent);
+
+                listeUe.add(nouvelleUe);
             }
         } catch (SQLException e) {
             log.log(Level.WARNING, "Erreur lors du chargement des UE", e);
@@ -214,22 +223,23 @@ public class Request {
     public String[] recupConfigurationGlobale() {
         String[] config = new String[2];
 
-        // On cherche l'unique ligne qui est définie comme "courante"
-        String sql = "SELECT annee_univ, semestre_impair FROM Annee_Universitaire WHERE est_courante = TRUE LIMIT 1";
+        // 🌟 ADAPTATION : On utilise la table Historique_Semestre de la BDD
+        String sql = "SELECT annee_univ, est_impair FROM Historique_Semestre WHERE est_courant = TRUE LIMIT 1";
 
         try (Statement st = conn.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
 
             if (rs.next()) {
                 config[0] = rs.getString("annee_univ");
-                config[1] = String.valueOf(rs.getBoolean("semestre_impair"));
+                config[1] = String.valueOf(rs.getBoolean("est_impair"));
             }
         } catch (SQLException e) {
             log.log(Level.WARNING, "Erreur lors de la récupération de l'année courante", e);
-            // Valeurs de secours au cas où la table est vide
             config[0] = "2024-2025";
             config[1] = "true";
         }
         return config;
     }
+
+
 }
