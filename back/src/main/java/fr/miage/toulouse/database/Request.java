@@ -42,11 +42,12 @@ public class Request {
                 "E.num_etu, E.nom, E.prenom, E.date_naissance, " +
                 "E.id_parcours, P.nom_parcours AS parcour, " +
                 "P.id_mention, M.nom_mention AS mention, " +
-                "COALESCE((SELECT MAX(semestre) FROM Inscription WHERE num_etu = E.num_etu), 1) AS semestre, " +
+                "COALESCE((SELECT MAX(sp.semestrePrevu) FROM Inscription I JOIN Structure_Parcours sp ON I.code_ue = sp.code_ue AND sp.id_parcours = E.id_parcours WHERE I.num_etu = E.num_etu), 1) AS semestre, " +
                 "COALESCE((SELECT SUM(nb_credits) FROM UE INNER JOIN Inscription I ON UE.code_ue = I.code_ue WHERE I.num_etu = E.num_etu AND I.statut_validation = 'valide'), 0) AS ects " +
                 "FROM Etudiant E " +
                 "JOIN Parcours P ON E.id_parcours = P.id_parcours " +
                 "JOIN Mention M ON P.id_mention = M.id_mention";
+
 
         List<Etudiant> listeEtudiants = new ArrayList<>();
 
