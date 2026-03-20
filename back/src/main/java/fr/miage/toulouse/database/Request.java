@@ -206,4 +206,30 @@ public class Request {
             log.log(Level.WARNING, "Erreur lors du tissage des inscriptions", e);
         }
     }
+
+    /**
+     * Récupère la configuration temporelle courante de l'université.
+     * @return Un tableau de String contenant : [0] = annee_univ, [1] = "true" ou "false" (pour le semestre impair)
+     */
+    public String[] recupConfigurationGlobale() {
+        String[] config = new String[2];
+
+        // On cherche l'unique ligne qui est définie comme "courante"
+        String sql = "SELECT annee_univ, semestre_impair FROM Annee_Universitaire WHERE est_courante = TRUE LIMIT 1";
+
+        try (Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+
+            if (rs.next()) {
+                config[0] = rs.getString("annee_univ");
+                config[1] = String.valueOf(rs.getBoolean("semestre_impair"));
+            }
+        } catch (SQLException e) {
+            log.log(Level.WARNING, "Erreur lors de la récupération de l'année courante", e);
+            // Valeurs de secours au cas où la table est vide
+            config[0] = "2024-2025";
+            config[1] = "true";
+        }
+        return config;
+    }
 }
