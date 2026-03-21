@@ -156,27 +156,29 @@ public class Request {
     }
 
     /**
-     * Permet de valider l'Ue d'un étudiant
+     * Permet de modifier le statut d'une UE pour un étudiant (passer en 'valide' ou 'echoue').
      * @param numEtu le numéro d'étudiant
      * @param code le code de l'Ue
-     * @param anneeUniv l'année universitaire au moment de l'inscription à l'Ue
-     * @return true si la validation à réussi et false si non
+     * @param anneeUniv l'année universitaire de l'inscription
+     * @param nouveauStatut le nouveau statut ('valide' ou 'echoue')
+     * @return true si la modification a réussi, false sinon
      */
-    public boolean valideUe(int numEtu, String code, String anneeUniv) {
+    public boolean modifierStatutInscription(int numEtu, String code, String anneeUniv, String nouveauStatut) {
 
-        String sql = "UPDATE Inscription SET statut_validation = 'valide' WHERE num_etu = ? AND code_ue = ? AND annee_univ = ?";
+        String sql = "UPDATE Inscription SET statut_validation = ? WHERE num_etu = ? AND code_ue = ? AND annee_univ = ?";
 
         try (PreparedStatement st = this.conn.prepareStatement(sql)) {
 
-            st.setInt(1,numEtu);
-            st.setString(2,code);
-            st.setString(3,anneeUniv);
+            st.setString(1, nouveauStatut);
+            st.setInt(2, numEtu);
+            st.setString(3, code);
+            st.setString(4, anneeUniv);
 
             int lignesModifiees = st.executeUpdate();
             return lignesModifiees == 1;
 
-        }catch (SQLException e){
-            log.log(Level.WARNING, e, () -> "❌ Erreur SQL lors de la validation de l'UE : " + e.getMessage());
+        } catch (SQLException e) {
+            log.log(Level.WARNING, e, () -> "❌ Erreur SQL lors de la modification du statut de l'UE : " + e.getMessage());
             return false;
         }
     }
