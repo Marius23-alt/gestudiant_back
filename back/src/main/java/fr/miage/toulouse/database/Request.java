@@ -244,5 +244,35 @@ public class Request {
         return config;
     }
 
+    /**
+     * Met à jour les informations personnelles et le parcours d'un étudiant.
+     * @param numEtu l'identifiant (le numéro d'étudiant)
+     * @param nouveauNom le nouveau nom
+     * @param nouveauPrenom le nouveau prénom
+     * @param idNouveauParcours l'identifiant du nouveau parcours
+     * @return true si la modification a réussi, false sinon.
+     */
+    /**
+     * Met à jour les informations personnelles et le parcours d'un étudiant.
+     */
+    public boolean updateEtudiant(int numEtu, String nouveauNom, String nouveauPrenom, Integer idNouveauParcours) {
+
+        String sql = "UPDATE Etudiant SET nom = ?, prenom = ?, id_parcours = ? WHERE num_etu = ?";
+
+        try (PreparedStatement st = this.conn.prepareStatement(sql)) {
+
+            st.setString(1, nouveauNom);
+            st.setString(2, nouveauPrenom);
+            st.setInt(3, idNouveauParcours);
+            st.setInt(4, numEtu);
+
+            int lignesModifiees = st.executeUpdate();
+            return lignesModifiees == 1;
+
+        } catch (SQLException e) {
+            log.log(Level.WARNING, e, () -> "❌ Erreur SQL lors de la modification de l'étudiant " + numEtu + " : " + e.getMessage());
+            return false;
+        }
+    }
 
 }
