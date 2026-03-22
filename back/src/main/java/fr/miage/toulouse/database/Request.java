@@ -156,27 +156,29 @@ public class Request {
     }
 
     /**
-     * Permet de valider l'Ue d'un étudiant
+     * Permet de modifier le statut d'une UE pour un étudiant (passer en 'valide' ou 'echoue').
      * @param numEtu le numéro d'étudiant
      * @param code le code de l'Ue
-     * @param anneeUniv l'année universitaire au moment de l'inscription à l'Ue
-     * @return true si la validation à réussi et false si non
+     * @param anneeUniv l'année universitaire de l'inscription
+     * @param nouveauStatut le nouveau statut ('valide' ou 'echoue')
+     * @return true si la modification a réussi, false sinon
      */
-    public boolean valideUe(int numEtu, String code, String anneeUniv) {
+    public boolean modifierStatutInscription(int numEtu, String code, String anneeUniv, String nouveauStatut) {
 
-        String sql = "UPDATE Inscription SET statut_validation = 'valide' WHERE num_etu = ? AND code_ue = ? AND annee_univ = ?";
+        String sql = "UPDATE Inscription SET statut_validation = ? WHERE num_etu = ? AND code_ue = ? AND annee_univ = ?";
 
         try (PreparedStatement st = this.conn.prepareStatement(sql)) {
 
-            st.setInt(1,numEtu);
-            st.setString(2,code);
-            st.setString(3,anneeUniv);
+            st.setString(1, nouveauStatut);
+            st.setInt(2, numEtu);
+            st.setString(3, code);
+            st.setString(4, anneeUniv);
 
             int lignesModifiees = st.executeUpdate();
             return lignesModifiees == 1;
 
-        }catch (SQLException e){
-            log.log(Level.WARNING, e, () -> "❌ Erreur SQL lors de la validation de l'UE : " + e.getMessage());
+        } catch (SQLException e) {
+            log.log(Level.WARNING, e, () -> "❌ Erreur SQL lors de la modification du statut de l'UE : " + e.getMessage());
             return false;
         }
     }
@@ -242,5 +244,35 @@ public class Request {
         return config;
     }
 
+    /**
+     * Met à jour les informations personnelles et le parcours d'un étudiant.
+     * @param numEtu l'identifiant (le numéro d'étudiant)
+     * @param nouveauNom le nouveau nom
+     * @param nouveauPrenom le nouveau prénom
+     * @param idNouveauParcours l'identifiant du nouveau parcours
+     * @return true si la modification a réussi, false sinon.
+     */
+    /**
+     * Met à jour les informations personnelles et le parcours d'un étudiant.
+     */
+    public boolean updateEtudiant(int numEtu, String nouveauNom, String nouveauPrenom, Integer idNouveauParcours) {
+
+        String sql = "UPDATE Etudiant SET nom = ?, prenom = ?, id_parcours = ? WHERE num_etu = ?";
+
+        try (PreparedStatement st = this.conn.prepareStatement(sql)) {
+
+            st.setString(1, nouveauNom);
+            st.setString(2, nouveauPrenom);
+            st.setInt(3, idNouveauParcours);
+            st.setInt(4, numEtu);
+
+            int lignesModifiees = st.executeUpdate();
+            return lignesModifiees == 1;
+
+        } catch (SQLException e) {
+            log.log(Level.WARNING, e, () -> "❌ Erreur SQL lors de la modification de l'étudiant " + numEtu + " : " + e.getMessage());
+            return false;
+        }
+    }
 
 }
