@@ -275,4 +275,34 @@ public class Request {
         }
     }
 
+    /**
+     * Supprime un étudiant de la base de données en supprimant
+     * également toutes les lignes de la table inscritption où il apparait.
+     * @param etudiant L'étudiant à supprimer.
+     * @return True si l'opération s'est bien passé false sinon.
+     */
+    public boolean supprimerEtudiant(Etudiant etudiant) {
+
+        String sqlInscription = "DELETE FROM Inscription WHERE num_etu = ?";
+        String sqlEtudiant = "DELETE FROM Etudiant WHERE num_etu = ?";
+
+        try (
+                PreparedStatement st1 = this.conn.prepareStatement(sqlInscription);
+                PreparedStatement st2 = this.conn.prepareStatement(sqlEtudiant)
+        ) {
+            // suppression des inscriptions
+            st1.setInt(1, etudiant.getNumEtu());
+            st1.executeUpdate();
+
+            // 2ème requête : suppression de l'étudiant
+            st2.setInt(1, etudiant.getNumEtu());
+            int lignesModifiees = st2.executeUpdate();
+
+            return lignesModifiees == 1;
+
+        } catch (SQLException e) {
+            log.log(Level.WARNING, "Erreur lors de la suppression de l'étudiant", e);
+            return false;
+        }
+    }
 }
