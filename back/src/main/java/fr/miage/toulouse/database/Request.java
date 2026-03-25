@@ -3,7 +3,6 @@ package fr.miage.toulouse.database;
 import fr.miage.toulouse.cours.Etudiant;
 import fr.miage.toulouse.cours.Inscription;
 import fr.miage.toulouse.cours.Ue;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +16,6 @@ public class Request {
 
     private Connection conn;
     private final Logger log =  Logger.getLogger(Request.class.getName());
-
     private static final String ERROR ="Erreur lors du chargement des données";
 
     /**
@@ -33,7 +31,7 @@ public class Request {
     }
 
     /**
-     * Récupère TOUS les étudiants de la base de données avec leurs infos complètes.
+     * Récupère tous les étudiants de la base de données avec leurs infos complètes.
      * Les objets Parcours et Mention sont construits et imbriqués automatiquement.
      */
     public List<Etudiant> recupTousLesEtudiants() {
@@ -90,7 +88,7 @@ public class Request {
             return lignesModifiees > 0;
 
         } catch (SQLException ex) {
-            log.log(Level.WARNING, ex, () -> "❌ Erreur SQL lors de l'ajout de l'étudiant : " + ex.getMessage());
+            log.log(Level.WARNING, ex, () -> "Erreur SQL lors de l'ajout de l'étudiant : " + ex.getMessage());
             return false;
         }
     }
@@ -132,7 +130,7 @@ public class Request {
      * @param numEtu le numéro d'étudiant
      * @param code le code de l'Ue
      * @param anneeUniv l'année universitaire au moment de l'inscription à l'Ue
-     * @return true si l'inscription à réussi et false si non
+     * @return true si l'inscription a réussi et false sinon
      */
     public boolean ajouterInscitption(int numEtu, String code, String anneeUniv) {
 
@@ -149,7 +147,7 @@ public class Request {
             return lignesModifiees == 1;
 
         }catch (SQLException e){
-            log.log(Level.WARNING, e, () -> "❌ Erreur SQL lors de l'inscription de l'étudiant à l'UE : " + e.getMessage());
+            log.log(Level.WARNING, e, () -> "Erreur SQL lors de l'inscription de l'étudiant à l'UE : " + e.getMessage());
             return false;
         }
 
@@ -178,7 +176,7 @@ public class Request {
             return lignesModifiees == 1;
 
         } catch (SQLException e) {
-            log.log(Level.WARNING, e, () -> "❌ Erreur SQL lors de la modification du statut de l'UE : " + e.getMessage());
+            log.log(Level.WARNING, e, () -> "Erreur SQL lors de la modification du statut de l'UE : " + e.getMessage());
             return false;
         }
     }
@@ -212,7 +210,8 @@ public class Request {
                     compteur++;
                 }
             }
-            System.out.println("Request : " + compteur + " inscriptions tissées avec succès !");
+            String msg = "Request : " + compteur + " inscriptions tissées avec succès !";
+            log.info(msg);
 
         } catch (SQLException e) {
             log.log(Level.WARNING, "Erreur lors du tissage des inscriptions", e);
@@ -226,7 +225,6 @@ public class Request {
     public String[] recupConfigurationGlobale() {
         String[] config = new String[2];
 
-        // 🌟 ADAPTATION : On utilise la table Historique_Semestre de la BDD
         String sql = "SELECT annee_univ, est_impair FROM Historique_Semestre WHERE est_courant = TRUE LIMIT 1";
 
         try (Statement st = conn.createStatement();
@@ -252,9 +250,6 @@ public class Request {
      * @param idNouveauParcours l'identifiant du nouveau parcours
      * @return true si la modification a réussi, false sinon.
      */
-    /**
-     * Met à jour les informations personnelles et le parcours d'un étudiant.
-     */
     public boolean updateEtudiant(int numEtu, String nouveauNom, String nouveauPrenom, Integer idNouveauParcours) {
 
         String sql = "UPDATE Etudiant SET nom = ?, prenom = ?, id_parcours = ? WHERE num_etu = ?";
@@ -270,9 +265,39 @@ public class Request {
             return lignesModifiees == 1;
 
         } catch (SQLException e) {
-            log.log(Level.WARNING, e, () -> "❌ Erreur SQL lors de la modification de l'étudiant " + numEtu + " : " + e.getMessage());
+            log.log(Level.WARNING, e, () -> "Erreur SQL lors de la modification de l'étudiant " + numEtu + " : " + e.getMessage());
             return false;
         }
     }
 
+    /**
+     * Supprime un étudiant de la base de données en supprimant
+     * également toutes les lignes de la table inscritption où il apparait.
+     * @param etudiant L'étudiant à supprimer.
+     * @return True si l'opération s'est bien passé false sinon.
+     */
+    public boolean supprimerEtudiant(Etudiant etudiant) {
+
+        String sqlInscription = "DELETE FROM Inscription WHERE num_etu = ?";
+        String sqlEtudiant = "DELETE FROM Etudiant WHERE num_etu = ?";
+
+        try (
+                PreparedStatement st1 = this.conn.prepareStatement(sqlInscription);
+                PreparedStatement st2 = this.conn.prepareStatement(sqlEtudiant)
+        ) {
+            // suppression des inscriptions
+            st1.setInt(1, etudiant.getNumEtu());
+            st1.executeUpdate();
+
+            // 2ème requête : suppression de l'étudiant
+            st2.setInt(1, etudiant.getNumEtu());
+            int lignesModifiees = st2.executeUpdate();
+
+            return lignesModifiees == 1;
+
+        } catch (SQLException e) {
+            log.log(Level.WARNING, "Erreur lors de la suppression de l'étudiant", e);
+            return false;
+        }
+    }
 }

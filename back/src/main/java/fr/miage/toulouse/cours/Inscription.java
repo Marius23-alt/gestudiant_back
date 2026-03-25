@@ -1,12 +1,22 @@
 package fr.miage.toulouse.cours;
 
+/**
+ * Classe représentant l'inscription entre un étudiant et une ue
+ */
 public class Inscription {
+
     private Etudiant etudiant;
     private Ue ue;
     private String annee;
     private String statut;
 
-
+    /**
+     * Construit une inscription
+     * @param etudiant l'étudiant qu'on inscrit
+     * @param ue l'ue à laquelle l'étudiant sera inscrit
+     * @param annee l'année d'inscription
+     * @param statut soit 'en_cours' soit 'valide'
+     */
     public Inscription(Etudiant etudiant, Ue ue, String annee, String statut){
         this.etudiant = etudiant;
         this.ue = ue;

@@ -4,7 +4,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Classe représentant un étudiant
+ */
 public class Etudiant {
+
     private int numEtu;
     private String nom;
     private String prenom;
@@ -12,9 +16,18 @@ public class Etudiant {
     private List<Inscription> inscription;
     private int nbEcts;
     private int semestreActuel;
-
     private Parcour parcour;
 
+    /**
+     * Construit un étudiant
+     * @param numEtu son numéro d'étudiant
+     * @param nom son nom
+     * @param prenom son prénom
+     * @param dateNaissance sa date de naissance
+     * @param parcour son parcours d'étude
+     * @param semestreActuel le semestre dans lequel il est inscrit
+     * @param nbEcts son nombre d'ects au total
+     */
     public Etudiant(int numEtu, String nom, String prenom, LocalDate dateNaissance, Parcour parcour, int semestreActuel, int nbEcts) {
         this.numEtu = numEtu;
         this.nom = nom;
