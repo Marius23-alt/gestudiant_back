@@ -107,24 +107,29 @@ public class Request {
                 "LEFT JOIN Mention ON Parcours.id_mention = Mention.id_mention " +
                 "LEFT JOIN Prerequis ON UE.code_ue = Prerequis.code_ue";
 
-        List<Ue> listeUe = new ArrayList<>();
+        // On utilise une Map pour garder une seule instance par code_ue
+        java.util.Map<String, Ue> mapUes = new java.util.LinkedHashMap<>();
 
         try (Statement st = conn.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
 
             while (rs.next()) {
-                // Ta classe de conversion crée l'UE normalement
-                Ue nouvelleUe = Convertion.toUe(rs);
+                String codeUe = rs.getString("code_ue");
 
-                String codePrecedent = rs.getString("code_ue_requise");
-                nouvelleUe.setCodeUePrecedente(codePrecedent);
+                // Si l'UE n'est pas encore dans la Map, on la crée
+                if (!mapUes.containsKey(codeUe)) {
+                    Ue nouvelleUe = Convertion.toUe(rs);
 
-                listeUe.add(nouvelleUe);
+                    String codePrecedent = rs.getString("code_ue_requise");
+                    nouvelleUe.setCodeUePrecedente(codePrecedent);
+
+                    mapUes.put(codeUe, nouvelleUe);
+                }
             }
         } catch (SQLException e) {
             log.log(Level.WARNING, "Erreur lors du chargement des UE", e);
         }
-        return listeUe;
+        return new ArrayList<>(mapUes.values());
     }
 
     /**
@@ -244,14 +249,6 @@ public class Request {
         return config;
     }
 
-    /**
-     * Met à jour les informations personnelles et le parcours d'un étudiant.
-     * @param numEtu l'identifiant (le numéro d'étudiant)
-     * @param nouveauNom le nouveau nom
-     * @param nouveauPrenom le nouveau prénom
-     * @param idNouveauParcours l'identifiant du nouveau parcours
-     * @return true si la modification a réussi, false sinon.
-     */
     /**
      * Met à jour les informations personnelles et le parcours d'un étudiant.
      */
