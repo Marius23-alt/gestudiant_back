@@ -31,12 +31,13 @@ public class Request {
     }
 
     /**
-     * Récupère tous les étudiants de la base de données avec leurs infos complètes.
-     * Les objets Parcours et Mention sont construits et imbriqués automatiquement.
+     * Récupère la liste de tous les étudiants de la base de données.
+     * Cette méthode reconstruit les objets complets (avec leur parcours et mention)
+     * et calcule automatiquement le total de leurs crédits ECTS validés.
+     * * @return Une liste contenant tous les étudiants avec leurs informations à jour.
      */
     public List<Etudiant> recupTousLesEtudiants() {
 
-        // La requête qui ramène absolument TOUT ce dont Convertion.toEtudiant() a besoin
         String sql = "SELECT " +
                 "E.num_etu, E.nom, E.prenom, E.date_naissance, " +
                 "E.id_parcours, P.nom_parcours AS parcour, " +
@@ -54,7 +55,6 @@ public class Request {
              ResultSet rs = st.executeQuery()) {
 
             while (rs.next()) {
-                // Ici, la magie opère : Convertion fabrique la Mention, la met dans le Parcours, qu'il met dans l'Etudiant !
                 listeEtudiants.add(Convertion.toEtudiant(rs));
             }
         } catch (SQLException e) {
@@ -69,19 +69,15 @@ public class Request {
      * @return true si l'insertion a réussi, false sinon.
      */
     public boolean ajouterEtudiant(Etudiant e) {
-        // On insère uniquement les infos de la table Etudiant
         String sql = "INSERT INTO Etudiant (num_etu, nom, prenom, date_naissance, semestre, id_parcours) VALUES (?, ?, ?, ?, ?, ?)";
 
-        // On utilise this.conn qui est déjà ouverte par le constructeur !
         try (PreparedStatement pstmt = this.conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, e.getNumEtu());
             pstmt.setString(2, e.getNom());
             pstmt.setString(3, e.getPrenom());
-            // Conversion de la date (LocalDate vers java.sql.Date)
             pstmt.setDate(4, java.sql.Date.valueOf(e.getDateNaissance()));
             pstmt.setInt(5 ,e.getSemestreActuel());
-            // On récupère l'ID du parcours via l'objet Parcours imbriqué
             pstmt.setInt(6, e.getParcour().getId());
 
             int lignesModifiees = pstmt.executeUpdate();
@@ -93,6 +89,12 @@ public class Request {
         }
     }
 
+    /**
+     * Récupère la liste de toutes les unités d'enseignement (UE) disponibles.
+     * Cette méthode extrait les informations des UE, leurs liens avec les parcours
+     * et leurs éventuels prérequis, puis transforme les résultats en objets Java.
+     * @return Une liste contenant toutes les UE configurées dans le système.
+     */
     public List<Ue> recupToutesLesUe() {
         String sql = "SELECT UE.code_ue, UE.nom_ue, UE.nb_credits, " +
                 "Structure_Parcours.semestrePrevu, " +
@@ -184,7 +186,13 @@ public class Request {
         }
     }
 
-
+    /**
+     * Associe les inscriptions de la base de données aux objets Étudiants et UE en mémoire.
+     * Cette méthode parcourt la table des inscriptions et crée les liens bidirectionnels
+     * entre les instances d'étudiants et d'UE déjà chargées pour refléter l'historique scolaire.
+     * @param listeEtudiants La liste des étudiants chargée en mémoire vive.
+     * @param listeUes La liste des unités d'enseignement chargée en mémoire vive.
+     */
     public void lierInscriptionsEnMemoire(List<Etudiant> listeEtudiants, List<Ue> listeUes) {
         String sql = "SELECT num_etu, code_ue, annee_univ, statut_validation FROM Inscription";
 
@@ -288,11 +296,9 @@ public class Request {
                 PreparedStatement st1 = this.conn.prepareStatement(sqlInscription);
                 PreparedStatement st2 = this.conn.prepareStatement(sqlEtudiant)
         ) {
-            // suppression des inscriptions
             st1.setInt(1, etudiant.getNumEtu());
             st1.executeUpdate();
 
-            // 2ème requête : suppression de l'étudiant
             st2.setInt(1, etudiant.getNumEtu());
             int lignesModifiees = st2.executeUpdate();
 
