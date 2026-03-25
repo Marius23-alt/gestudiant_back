@@ -1,21 +1,18 @@
 package fr.miage.toulouse;
 
-import fr.miage.toulouse.cours.Ue;
-import fr.miage.toulouse.database.Connexion;
-import fr.miage.toulouse.database.Request;
 
+import fr.miage.toulouse.database.Connexion;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.logging.Logger;
 
-
+/**
+ * Classe de test pour les requêtes vers la base de données et les conversions
+ */
 public class Main {
 
     private static final Logger log =  Logger.getLogger(Main.class.getName());
 
     public static void main(String[] args) {
-
-
 
         try {
             Connexion.getConnexion();

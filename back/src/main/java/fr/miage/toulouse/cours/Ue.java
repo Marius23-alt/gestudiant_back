@@ -1,7 +1,11 @@
 package fr.miage.toulouse.cours;
+
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Classe représentant une unité d'enseignement (ue)
+ */
 public class Ue {
 
     private String code;
@@ -12,6 +16,14 @@ public class Ue {
     private List<Inscription> inscription;
     private String codeUePrecedente;
 
+    /**
+     * Construit une ue
+     * @param code le code de l'ue selon l'académie
+     * @param nom le nom de l'ue
+     * @param nbCredit le nombre de crédits ects qu'elle apporte
+     * @param semestre le semestre au qu'elle est rattaché l'ue
+     * @param parcours le parcours au qu'elle est rattaché l'ue
+     */
     public Ue(String code, String nom, int nbCredit, int semestre, Parcour parcours) {
         this.code = code;
         this.nom = nom;
