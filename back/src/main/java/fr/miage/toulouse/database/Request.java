@@ -310,4 +310,33 @@ public class Request {
         }
     }
 
+    /**
+     * Fait passer l'université au semestre suivant dans la base de données.
+     * Désactive l'ancien semestre courant et active le nouveau à la place.
+     *
+     * @param nouvelleAnnee L'année universitaire cible (ex: "2024-2025").
+     * @param nouveauEstImpair Vrai pour un semestre impair (Automne), faux pour pair (Printemps).
+     * @return true si le changement en base a réussi, false en cas d'erreur SQL.
+     */
+    public boolean avancerHorlogeGlobale(String nouvelleAnnee, boolean nouveauEstImpair) {
+        try {
+            Statement st = conn.createStatement();
+            st.executeUpdate("UPDATE Historique_Semestre SET est_courant = FALSE WHERE est_courant = TRUE");
+
+            String sql = "INSERT INTO Historique_Semestre (annee_univ, est_impair, est_courant) VALUES (?, ?, TRUE) " +
+                    "ON DUPLICATE KEY UPDATE est_courant = TRUE";
+
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setString(1, nouvelleAnnee);
+                pstmt.setBoolean(2, nouveauEstImpair);
+                pstmt.executeUpdate();
+            }
+            return true;
+
+        } catch (SQLException e) {
+            log.log(Level.WARNING, "Erreur SQL lors du changement de semestre", e);
+            return false;
+        }
+    }
+
 }
